@@ -125,7 +125,10 @@ async function writeStore(store: StoreShape) {
   await writeFile(storePath, `${JSON.stringify(store, null, 2)}\n`, "utf8");
 }
 
-export async function listVisibleComments(postType: string, postSlug: string) {
+export async function listVisibleComments(
+  postType: string,
+  postSlug: string
+): Promise<StoredComment[]> {
   if (postgresAvailable()) {
     const comments = await pgListVisibleComments(postType, postSlug);
     if (comments) return comments;
@@ -146,7 +149,7 @@ export async function listVisibleComments(postType: string, postSlug: string) {
     );
 }
 
-export async function listAllComments() {
+export async function listAllComments(): Promise<StoredComment[]> {
   if (postgresAvailable()) {
     const comments = await pgListAllComments();
     if (comments) return comments;
@@ -168,7 +171,7 @@ export async function createComment(input: {
   content: unknown;
   visitorId: string;
   ipHash: string;
-}) {
+}): Promise<StoredComment> {
   const now = new Date().toISOString();
   const nickname = clampText(input.nickname, 40, "Guest") || "Guest";
   const content = clampText(input.content, 800);
@@ -206,7 +209,10 @@ export async function createComment(input: {
   return comment;
 }
 
-export async function updateCommentStatus(id: string, status: CommentStatus) {
+export async function updateCommentStatus(
+  id: string,
+  status: CommentStatus
+): Promise<StoredComment | null> {
   if (postgresAvailable()) {
     const comment = await pgUpdateCommentStatus(id, status);
     if (comment) return comment;
@@ -225,7 +231,7 @@ export async function updateCommentStatus(id: string, status: CommentStatus) {
   return comment;
 }
 
-export async function likeComment(id: string) {
+export async function likeComment(id: string): Promise<StoredComment | null> {
   if (postgresAvailable()) {
     const comment = await pgLikeComment(id);
     if (comment) return comment;
@@ -246,7 +252,10 @@ export async function likeComment(id: string) {
   return comment;
 }
 
-export async function deleteOwnComment(id: string, visitorId: string) {
+export async function deleteOwnComment(
+  id: string,
+  visitorId: string
+): Promise<StoredComment | null> {
   if (postgresAvailable()) {
     const comment = await pgDeleteOwnComment(id, visitorId);
     if (comment) return comment;
@@ -269,7 +278,9 @@ export async function deleteOwnComment(id: string, visitorId: string) {
   return comment;
 }
 
-export async function listVisibleMessages(roomId = "main") {
+export async function listVisibleMessages(
+  roomId = "main"
+): Promise<StoredMessage[]> {
   if (postgresAvailable()) {
     const messages = await pgListVisibleMessages(roomId);
     if (messages) return messages;
@@ -286,7 +297,7 @@ export async function listVisibleMessages(roomId = "main") {
     .slice(-120);
 }
 
-export async function listAllMessages() {
+export async function listAllMessages(): Promise<StoredMessage[]> {
   if (postgresAvailable()) {
     const messages = await pgListAllMessages();
     if (messages) return messages;
@@ -306,7 +317,7 @@ export async function createMessage(input: {
   content: unknown;
   visitorId: string;
   ipHash: string;
-}) {
+}): Promise<StoredMessage> {
   const now = new Date().toISOString();
   const nickname = clampText(input.nickname, 40, "Guest") || "Guest";
   const content = clampText(input.content, 500);
@@ -344,7 +355,7 @@ export async function upsertRoomPresence(input: {
   roomId?: unknown;
   nickname: unknown;
   visitorId: string;
-}) {
+}): Promise<StoredPresence> {
   const now = new Date().toISOString();
   const nickname = clampText(input.nickname, 40, "Guest") || "Guest";
   const roomId = clampText(input.roomId, 60, "main") || "main";
@@ -384,7 +395,9 @@ export async function upsertRoomPresence(input: {
   return presence;
 }
 
-export async function listRoomPresence(roomId = "main") {
+export async function listRoomPresence(
+  roomId = "main"
+): Promise<StoredPresence[]> {
   if (postgresAvailable()) {
     const members = await pgListRoomPresence(roomId);
     if (members) return members;
@@ -405,7 +418,10 @@ export async function listRoomPresence(roomId = "main") {
     );
 }
 
-export async function updateMessageStatus(id: string, status: MessageStatus) {
+export async function updateMessageStatus(
+  id: string,
+  status: MessageStatus
+): Promise<StoredMessage | null> {
   if (postgresAvailable()) {
     const message = await pgUpdateMessageStatus(id, status);
     if (message) return message;
