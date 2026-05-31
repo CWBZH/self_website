@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Quiet paper window placeholder">
+  <rect width="1200" height="800" fill="#f7f5f0"/>
+  <rect x="90" y="84" width="1020" height="632" rx="18" fill="#fffefa" stroke="#ded8cc" stroke-width="2"/>
+  <path d="M160 624C275 464 390 388 505 396c119 8 198 117 315 107 83-7 142-70 220-164v285H160Z" fill="#d8d2c7"/>
+  <circle cx="880" cy="224" r="86" fill="#19352d" opacity=".22"/>
+  <path d="M214 194h355M214 254h238M214 314h296" stroke="#777168" stroke-width="16" stroke-linecap="round" opacity=".35"/>
+</svg>

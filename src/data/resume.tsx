@@ -1,5 +1,5 @@
 import { Icons } from "@/components/icons";
-import { HomeIcon, NotebookIcon } from "lucide-react";
+import { BookOpenIcon, HomeIcon, MessageCircleIcon, NotebookIcon, UserRoundIcon } from "lucide-react";
 import { ReactLight } from "@/components/ui/svgs/reactLight";
 import { NextjsIconDark } from "@/components/ui/svgs/nextjsIconDark";
 import { Typescript } from "@/components/ui/svgs/typescript";
@@ -13,15 +13,15 @@ import { Java } from "@/components/ui/svgs/java";
 import { Csharp } from "@/components/ui/svgs/csharp";
 
 export const DATA = {
-  name: "Dillion Verma",
-  initials: "DV",
-  url: "https://dillion.io",
-  location: "San Francisco, CA",
+  name: "Mr. Bin",
+  initials: "MB",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://106.52.232.205:3001",
+  location: "China",
   locationLink: "https://www.google.com/maps/place/sanfrancisco",
   description:
-    "Software Engineer turned Entrepreneur. I love building things and helping people. Very active on Twitter.",
+    "一个放置长文、短随笔、图片记录和访客聊天室的个人数字客厅。",
   summary:
-    "At the end of 2022, I quit my job as a software engineer to go fulltime into building and scaling my own SaaS businesses. In the past, [I pursued a double degree in computer science and business](/#education), [interned at big tech companies in Silicon Valley](https://www.youtube.com/watch?v=d-LJ2e5qKdE), and [competed in over 21 hackathons for fun](/#hackathons). I also had the pleasure of being a part of the first ever in-person cohort of buildspace called [buildspace sf1](https://buildspace.so/sf1).",
+    "这里不是简历，也不是传统作品集。它更像一个安静的个人空间：正式文章放在 Journal，短想法放在 Notes，访客可以进入 Room 留下一句话，页脚的小句号通向半隐藏的 Garden。",
   avatarUrl: "/me.png",
   skills: [
     { name: "React", icon: ReactLight },
@@ -38,7 +38,10 @@ export const DATA = {
   ],
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
-    { href: "/blog", icon: NotebookIcon, label: "Blog" },
+    { href: "/journal", icon: BookOpenIcon, label: "Journal" },
+    { href: "/notes", icon: NotebookIcon, label: "Notes" },
+    { href: "/room", icon: MessageCircleIcon, label: "Room" },
+    { href: "/about", icon: UserRoundIcon, label: "About" },
   ],
   contact: {
     email: "hello@example.com",

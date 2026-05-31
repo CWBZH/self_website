@@ -9,6 +9,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "studio:hash": "node scripts/hash-studio-password.mjs",
+    "site:smoke": "node scripts/smoke-personal-site.mjs",
+    "release:zip": "powershell -ExecutionPolicy Bypass -File scripts/package-for-server.ps1",
     "lint": "eslint",
     "lint:fix": "eslint --fix"
   },
@@ -28,6 +31,7 @@
     "motion": "^12.23.27",
     "next": "16.1.1",
     "next-themes": "^0.4.6",
+    "pg": "^8.21.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-markdown": "^10.1.0",

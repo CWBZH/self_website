@@ -1,0 +1,34 @@
+---
+title: "在慢一点的页面里写东西"
+publishedAt: "2026-05-31"
+author: "Mr. Bin"
+summary: "首页不是文章列表，而是一组图像入口。图片建立情绪，标题给出方向，正文让人真正停下来。"
+image: "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1500&q=86"
+type: "journal"
+visibility: "public"
+tags: ["personal", "design", "writing"]
+readingTime: "8 min"
+---
+
+我希望这个网站不是一份简历，也不是一个纯作品集。
+
+它更像一个数字客厅：有正式文章，有短随笔，有一些图片记录，也有一个能让访客停下来聊一句的房间。
+
+## 首页为什么用图片作为入口
+
+传统博客列表很直接，但它很快会变成标题和日期的堆叠。图片入口会慢一点，也更接近我想要的气质。
+
+图片负责建立情绪，标题负责给出方向，摘要负责告诉读者是否继续进入。
+
+> 动效可以帮助人进入内容，但不应该抢走内容本身。
+
+## 文章页应该安静
+
+首页可以有 hover、视差、圆形鼠标和页面转场。文章页则需要克制：头图、标题、日期、标签之后，正文保持稳定宽度和舒适行高。
+
+```tsx title="content-boundary.ts"
+const pageMotion = "home";
+const readingMotion = "quiet";
+```
+
+后续评论区会接真实后端，但第一阶段先确定它应该长什么样。

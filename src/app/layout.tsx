@@ -62,7 +62,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="zh-CN" suppressHydrationWarning>
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased relative",
@@ -83,7 +83,7 @@ export default function RootLayout({
                 }}
               />
             </div>
-            <div className="relative z-10 max-w-2xl mx-auto py-12 pb-24 sm:py-24 px-6">
+            <div className="relative z-10 mx-auto w-full max-w-7xl py-8 pb-24 sm:py-16 px-5 sm:px-8">
               {children}
             </div>
             <Navbar />

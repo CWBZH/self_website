@@ -15,6 +15,11 @@ const posts = defineCollection({
         author: z.string().optional(),
         summary: z.string(),
         image: z.string().optional(),
+        cover: z.string().optional(),
+        type: z.enum(["journal", "note", "garden"]).default("journal"),
+        visibility: z.enum(["public", "garden"]).default("public"),
+        tags: z.array(z.string()).default([]),
+        readingTime: z.string().optional(),
         content: z.string(),
     }),
     transform: async (document, context) => {
