@@ -42,7 +42,28 @@ Get-ChildItem -LiteralPath $ProjectRoot -Force | ForEach-Object {
   Copy-Item -LiteralPath $_.FullName -Destination $StageDir -Recurse -Force
 }
 
-Compress-Archive -Path (Join-Path $StageDir "*") -DestinationPath $ZipPath -Force
+Get-ChildItem -LiteralPath $StageDir -Recurse -File |
+  Where-Object { $_.Extension -in @(".sh", ".conf", ".service", ".sql") } |
+  ForEach-Object {
+    $content = [System.IO.File]::ReadAllText($_.FullName)
+    $content = $content -replace "`r`n", "`n"
+    $content = $content -replace "`r", "`n"
+    [System.IO.File]::WriteAllText($_.FullName, $content, [System.Text.UTF8Encoding]::new($false))
+  }
+
+Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+$zip = [System.IO.Compression.ZipFile]::Open($ZipPath, [System.IO.Compression.ZipArchiveMode]::Create)
+try {
+  Get-ChildItem -LiteralPath $StageDir -Recurse -File | ForEach-Object {
+    $relativePath = $_.FullName.Substring($StageDir.Length).TrimStart("\", "/")
+    $entryName = $relativePath.Replace("\", "/")
+    [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $_.FullName, $entryName) | Out-Null
+  }
+}
+finally {
+  $zip.Dispose()
+}
 
 Write-Host "Release package created:"
 Write-Host $ZipPath
