@@ -1,7 +1,9 @@
-import { DATA } from "@/data/resume";
+import { getSiteSettings } from "@/lib/server/site-settings";
 import type { MetadataRoute } from "next";
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const settings = await getSiteSettings();
+
   return {
     rules: [
       {
@@ -10,6 +12,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/garden", "/garden/", "/studio", "/studio/", "/api/"],
       },
     ],
-    sitemap: `${DATA.url}/sitemap.xml`,
+    sitemap: `${settings.siteUrl}/sitemap.xml`,
   };
 }

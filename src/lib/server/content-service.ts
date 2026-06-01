@@ -12,6 +12,7 @@ import {
   listCmsPosts,
   type StoredCmsPost,
 } from "@/lib/server/content-store";
+import { getSiteSettings } from "@/lib/server/site-settings";
 
 function toPublishedPost(post: StoredCmsPost) {
   return toCmsPersonalPost({
@@ -37,25 +38,34 @@ async function getPublishedCmsPosts() {
 }
 
 export async function getPublicContentPosts() {
-  const cmsPosts = await getPublishedCmsPosts();
+  const [cmsPosts, settings] = await Promise.all([
+    getPublishedCmsPosts(),
+    getSiteSettings(),
+  ]);
   return sortPosts([
-    ...getStaticPublicPosts(),
+    ...(settings.showStaticMdxContent ? getStaticPublicPosts() : []),
     ...cmsPosts.filter((post) => post.visibility === "public"),
   ]);
 }
 
 export async function getContentPostsByType(type: PersonalPostType) {
-  const cmsPosts = await getPublishedCmsPosts();
+  const [cmsPosts, settings] = await Promise.all([
+    getPublishedCmsPosts(),
+    getSiteSettings(),
+  ]);
   return sortPosts([
-    ...getStaticPostsByType(type),
+    ...(settings.showStaticMdxContent ? getStaticPostsByType(type) : []),
     ...cmsPosts.filter((post) => post.type === type),
   ]);
 }
 
 export async function getGardenContentPosts() {
-  const cmsPosts = await getPublishedCmsPosts();
+  const [cmsPosts, settings] = await Promise.all([
+    getPublishedCmsPosts(),
+    getSiteSettings(),
+  ]);
   return sortPosts([
-    ...getStaticGardenPosts(),
+    ...(settings.showStaticMdxContent ? getStaticGardenPosts() : []),
     ...cmsPosts.filter(
       (post) => post.visibility === "garden" || post.type === "garden"
     ),
@@ -66,7 +76,10 @@ export async function getContentPostByRoute(
   type: PersonalPostType,
   slug: string
 ): Promise<PersonalPost | null> {
-  const staticPost = getStaticPostsByType(type).find((post) => post.slug === slug);
+  const settings = await getSiteSettings();
+  const staticPost = settings.showStaticMdxContent
+    ? getStaticPostsByType(type).find((post) => post.slug === slug)
+    : null;
   if (staticPost) return staticPost;
 
   const cmsPost = await getCmsPostByRoute(type, slug);

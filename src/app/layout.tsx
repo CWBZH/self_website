@@ -1,12 +1,12 @@
 import Navbar from "@/components/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { DATA } from "@/data/resume";
+import { FlickeringGrid } from "@/components/magicui/flickering-grid";
+import { getSiteSettings } from "@/lib/server/site-settings";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { FlickeringGrid } from "@/components/magicui/flickering-grid";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -20,41 +20,41 @@ const geistMono = Geist_Mono({
   variable: "--font-mono",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(DATA.url),
-  title: {
-    default: DATA.name,
-    template: `%s | ${DATA.name}`,
-  },
-  description: DATA.description,
-  openGraph: {
-    title: `${DATA.name}`,
-    description: DATA.description,
-    url: DATA.url,
-    siteName: `${DATA.name}`,
-    locale: "en_US",
-    type: "website",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+
+  return {
+    metadataBase: new URL(settings.siteUrl),
+    title: {
+      default: settings.siteName,
+      template: `%s | ${settings.siteName}`,
+    },
+    description: settings.siteDescription,
+    openGraph: {
+      title: settings.siteName,
+      description: settings.siteDescription,
+      url: settings.siteUrl,
+      siteName: settings.siteName,
+      locale: settings.locale,
+      type: "website",
+    },
+    robots: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
     },
-  },
-  twitter: {
-    title: `${DATA.name}`,
-    card: "summary_large_image",
-  },
-  verification: {
-    google: "",
-    yandex: "",
-  },
-};
+    twitter: {
+      title: settings.siteName,
+      card: "summary_large_image",
+    },
+  };
+}
 
 export default function RootLayout({
   children,
