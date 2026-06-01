@@ -14,6 +14,8 @@ import {
   pgUpdateCommentStatus,
   pgUpdateMessageStatus,
   pgUpsertRoomPresence,
+  pgPurgeComment,
+  pgPurgeMessage,
   postgresAvailable,
 } from "@/lib/server/postgres-room-store";
 
@@ -436,6 +438,42 @@ export async function updateMessageStatus(
 
   message.status = status;
   message.updatedAt = new Date().toISOString();
+  await writeStore(store);
+  return message;
+}
+
+export async function purgeComment(id: string): Promise<StoredComment | null> {
+  if (postgresAvailable()) {
+    const comment = await pgPurgeComment(id);
+    if (comment) return comment;
+  }
+
+  const store = await readStore();
+  const index = store.comments.findIndex((item) => item.id === id);
+
+  if (index === -1) {
+    return null;
+  }
+
+  const [comment] = store.comments.splice(index, 1);
+  await writeStore(store);
+  return comment;
+}
+
+export async function purgeMessage(id: string): Promise<StoredMessage | null> {
+  if (postgresAvailable()) {
+    const message = await pgPurgeMessage(id);
+    if (message) return message;
+  }
+
+  const store = await readStore();
+  const index = store.messages.findIndex((item) => item.id === id);
+
+  if (index === -1) {
+    return null;
+  }
+
+  const [message] = store.messages.splice(index, 1);
   await writeStore(store);
   return message;
 }

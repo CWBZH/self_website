@@ -345,3 +345,31 @@ export async function pgListRoomPresence(roomId = "main") {
 
   return result.rows.map(toPresence);
 }
+
+export async function pgPurgeComment(id: string) {
+  const db = await ensureSchema();
+  if (!db) return null;
+
+  const result = await db.query(
+    `delete from personal_comments
+     where id = $1
+     returning *`,
+    [id]
+  );
+
+  return result.rows[0] ? toComment(result.rows[0]) : null;
+}
+
+export async function pgPurgeMessage(id: string) {
+  const db = await ensureSchema();
+  if (!db) return null;
+
+  const result = await db.query(
+    `delete from personal_room_messages
+     where id = $1
+     returning *`,
+    [id]
+  );
+
+  return result.rows[0] ? toMessage(result.rows[0]) : null;
+}

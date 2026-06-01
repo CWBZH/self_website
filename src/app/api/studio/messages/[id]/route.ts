@@ -1,5 +1,6 @@
 import {
   type MessageStatus,
+  purgeMessage,
   updateMessageStatus,
 } from "@/lib/server/personal-room-store";
 import { isStudioRequest, unauthorized } from "@/lib/server/studio-auth";
@@ -32,4 +33,22 @@ export async function PATCH(
   }
 
   return NextResponse.json({ message });
+}
+
+export async function DELETE(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  if (!isStudioRequest(request)) {
+    return unauthorized();
+  }
+
+  const { id } = await context.params;
+  const message = await purgeMessage(id);
+
+  if (!message) {
+    return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
+  }
+
+  return NextResponse.json({ ok: true, message });
 }
