@@ -21,7 +21,7 @@ export default async function GardenPage() {
         <h1 className="mt-4 max-w-4xl text-balance text-5xl font-medium tracking-tight md:text-7xl">{settings.gardenTitle}</h1>
         <p className="mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">{settings.gardenDescription}</p>
       </header>
-      <PostList posts={posts} />
+      <PostList posts={posts} emptyText={settings.gardenEmptyText} />
       <ContactFooter />
     </main>
   );

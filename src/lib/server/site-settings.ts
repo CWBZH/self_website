@@ -18,6 +18,9 @@ export type SiteSettings = {
   gardenEyebrow: string;
   gardenTitle: string;
   gardenDescription: string;
+  journalEmptyText: string;
+  notesEmptyText: string;
+  gardenEmptyText: string;
   aboutEyebrow: string;
   aboutTitle: string;
   aboutParagraphs: string[];
@@ -33,34 +36,37 @@ export type SiteSettings = {
 };
 
 export const defaultSiteSettings: SiteSettings = {
-  siteName: "Mr. Bin 的个人数字客厅",
-  siteDescription: "一个放置长文、短随笔、图片记录和访客聊天室的个人数字空间。",
+  siteName: "MOL'S ROOM",
+  siteDescription: "Words, images and conversations in one personal space.",
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "http://106.52.232.205:3001",
   locale: "zh_CN",
   showStaticMdxContent: false,
   homeEyebrow: "Personal room / Journal / Notes",
-  homeTitle: "一个安静的个人数字客厅，用来写文章、放图片，也留一张椅子给访客聊天。",
+  homeTitle: "Words, images and conversations in one personal space.",
   journalEyebrow: "Journal",
-  journalTitle: "长文章和完整思考。",
-  journalDescription: "正式文章、技术记录、项目复盘和完整随笔。",
+  journalTitle: "Longer thoughts, written with care.",
+  journalDescription: "Essays, longer reflections and finished thoughts.",
   notesEyebrow: "Notes",
-  notesTitle: "更短、更轻、更接近日常的记录。",
-  notesDescription: "短随笔、灵感、摘录和还没完全成形的想法。",
+  notesTitle: "Small thoughts, loosely collected.",
+  notesDescription: "Fragments, brief notes and everyday observations.",
   gardenEyebrow: "Hidden garden",
-  gardenTitle: "一些不放在首页里的随笔、图片和私人记录。",
-  gardenDescription: "半隐藏的随笔花园。",
+  gardenTitle: "An evolving garden of images and unfinished thoughts.",
+  gardenDescription: "Hidden notes, images and private fragments.",
+  journalEmptyText: "No journal posts yet.",
+  notesEmptyText: "No notes yet.",
+  gardenEmptyText: "No garden entries yet.",
   aboutEyebrow: "About",
-  aboutTitle: "不是简历，不是作品集，是个人数字客厅。",
+  aboutTitle: "A living archive of thoughts, images and conversations.",
   aboutParagraphs: [
-    "一个放置长文、短随笔、图片记录和访客聊天室的个人数字客厅。",
-    "Journal 放正式文章，Notes 放短想法，Room 留给访客聊天，Garden 藏在页脚那个小句号后面。",
-    "这里会慢慢变成一个更私人、更可维护的内容空间。",
+    "This is a personal digital space for essays, brief notes, visual records and conversations.",
+    "Journal is where longer pieces live. Notes collects smaller thoughts and everyday fragments.",
+    "Room is an open space for visitors to leave a message or start a conversation.",
   ],
   roomEyebrow: "Room",
-  roomTitle: "一个能停下来聊一句的房间。",
-  roomDescription: "这里是访客聊天室。留下昵称，写一句话，不需要复杂社交关系。",
+  roomTitle: "A quiet room for visitors and conversations.",
+  roomDescription: "No profiles to build. No complicated social graph. Just a room for conversation.",
   footerEyebrow: "Contact",
-  footerTitle: "Leave a note, enter the room, or send an email.",
+  footerTitle: "Let's keep in touch.",
   email: "hello@example.com",
   githubUrl: "https://github.com/CWBZH",
   socialUrl: "",
@@ -108,6 +114,9 @@ export function normalizeSiteSettings(input: Partial<SiteSettings> = {}): SiteSe
     gardenEyebrow: normalizeString(input.gardenEyebrow, defaultSiteSettings.gardenEyebrow),
     gardenTitle: normalizeString(input.gardenTitle, defaultSiteSettings.gardenTitle),
     gardenDescription: normalizeString(input.gardenDescription, defaultSiteSettings.gardenDescription),
+    journalEmptyText: normalizeString(input.journalEmptyText, defaultSiteSettings.journalEmptyText),
+    notesEmptyText: normalizeString(input.notesEmptyText, defaultSiteSettings.notesEmptyText),
+    gardenEmptyText: normalizeString(input.gardenEmptyText, defaultSiteSettings.gardenEmptyText),
     aboutEyebrow: normalizeString(input.aboutEyebrow, defaultSiteSettings.aboutEyebrow),
     aboutTitle: normalizeString(input.aboutTitle, defaultSiteSettings.aboutTitle),
     aboutParagraphs: normalizeParagraphs(input.aboutParagraphs),

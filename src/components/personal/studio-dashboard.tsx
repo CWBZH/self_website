@@ -58,6 +58,9 @@ type SiteSettings = {
   gardenEyebrow: string;
   gardenTitle: string;
   gardenDescription: string;
+  journalEmptyText: string;
+  notesEmptyText: string;
+  gardenEmptyText: string;
   aboutEyebrow: string;
   aboutTitle: string;
   aboutParagraphs: string[];
@@ -122,6 +125,9 @@ const emptySettings: SettingsForm = {
   gardenEyebrow: "",
   gardenTitle: "",
   gardenDescription: "",
+  journalEmptyText: "",
+  notesEmptyText: "",
+  gardenEmptyText: "",
   aboutEyebrow: "",
   aboutTitle: "",
   aboutParagraphs: "",
@@ -560,6 +566,9 @@ function SettingsPanel({
         <label className="grid gap-2 text-sm">Journal title<input className={inputClass} value={form.journalTitle} onChange={(event) => onChange("journalTitle", event.target.value)} /></label>
         <label className="grid gap-2 text-sm">Notes title<input className={inputClass} value={form.notesTitle} onChange={(event) => onChange("notesTitle", event.target.value)} /></label>
         <label className="grid gap-2 text-sm">Garden title<input className={inputClass} value={form.gardenTitle} onChange={(event) => onChange("gardenTitle", event.target.value)} /></label>
+        <label className="grid gap-2 text-sm">Journal description<input className={inputClass} value={form.journalDescription} onChange={(event) => onChange("journalDescription", event.target.value)} /></label>
+        <label className="grid gap-2 text-sm">Notes description<input className={inputClass} value={form.notesDescription} onChange={(event) => onChange("notesDescription", event.target.value)} /></label>
+        <label className="grid gap-2 text-sm">Garden description<input className={inputClass} value={form.gardenDescription} onChange={(event) => onChange("gardenDescription", event.target.value)} /></label>
         <label className="grid gap-2 text-sm">Room title<input className={inputClass} value={form.roomTitle} onChange={(event) => onChange("roomTitle", event.target.value)} /></label>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
@@ -567,6 +576,9 @@ function SettingsPanel({
         <label className="grid gap-2 text-sm">About paragraphs<textarea className="min-h-28 rounded-xl border border-border bg-background px-3 py-2 leading-6" value={form.aboutParagraphs} onChange={(event) => onChange("aboutParagraphs", event.target.value)} /></label>
         <label className="grid gap-2 text-sm">Footer title<textarea className="min-h-28 rounded-xl border border-border bg-background px-3 py-2 leading-6" value={form.footerTitle} onChange={(event) => onChange("footerTitle", event.target.value)} /></label>
         <label className="grid gap-2 text-sm">Room description<textarea className="min-h-28 rounded-xl border border-border bg-background px-3 py-2 leading-6" value={form.roomDescription} onChange={(event) => onChange("roomDescription", event.target.value)} /></label>
+        <label className="grid gap-2 text-sm">Journal empty text<textarea className="min-h-20 rounded-xl border border-border bg-background px-3 py-2 leading-6" value={form.journalEmptyText} onChange={(event) => onChange("journalEmptyText", event.target.value)} /></label>
+        <label className="grid gap-2 text-sm">Notes empty text<textarea className="min-h-20 rounded-xl border border-border bg-background px-3 py-2 leading-6" value={form.notesEmptyText} onChange={(event) => onChange("notesEmptyText", event.target.value)} /></label>
+        <label className="grid gap-2 text-sm">Garden empty text<textarea className="min-h-20 rounded-xl border border-border bg-background px-3 py-2 leading-6" value={form.gardenEmptyText} onChange={(event) => onChange("gardenEmptyText", event.target.value)} /></label>
       </div>
       <div className="flex flex-wrap gap-5 rounded-2xl bg-muted/50 p-4 text-sm">
         <label className="flex items-center gap-2"><input type="checkbox" checked={form.showStaticMdxContent} onChange={(event) => onChange("showStaticMdxContent", event.target.checked)} />Show legacy MDX content</label>
