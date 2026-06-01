@@ -1,30 +1,22 @@
 import { ArticleShell } from "@/components/personal/article-shell";
 import {
-  getGardenPosts,
-  getPostByRoute,
-  getPostCover,
-  getPostSlug,
-} from "@/lib/content";
+  getAdjacentContentPosts,
+  getContentPostByRoute,
+} from "@/lib/server/content-service";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-export function generateStaticParams() {
-  return getGardenPosts().map((post) => ({
-    slug: getPostSlug(post),
-  }));
-}
+export const dynamic = "force-dynamic";
 
-export async function generateMetadata({
-  params,
-}: {
+type PageProps = {
   params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
-  const { slug } = await params;
-  const post = getPostByRoute("garden", slug);
+};
 
-  if (!post) {
-    return {};
-  }
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getContentPostByRoute("garden", slug);
+
+  if (!post) return {};
 
   return {
     title: post.title,
@@ -33,26 +25,16 @@ export async function generateMetadata({
       index: false,
       follow: false,
     },
-    openGraph: {
-      title: post.title,
-      description: post.summary,
-      images: [getPostCover(post)],
-      type: "article",
-    },
   };
 }
 
-export default async function GardenDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function GardenPostPage({ params }: PageProps) {
   const { slug } = await params;
-  const post = getPostByRoute("garden", slug);
+  const post = await getContentPostByRoute("garden", slug);
 
-  if (!post) {
-    notFound();
-  }
+  if (!post) notFound();
 
-  return <ArticleShell post={post} type="garden" />;
+  const adjacent = await getAdjacentContentPosts("garden", slug);
+
+  return <ArticleShell post={post} type="garden" {...adjacent} />;
 }

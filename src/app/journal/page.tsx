@@ -1,30 +1,29 @@
 import { ContactFooter } from "@/components/personal/contact-footer";
 import { PostList } from "@/components/personal/post-list";
-import { getPostsByType } from "@/lib/content";
+import { getContentPostsByType } from "@/lib/server/content-service";
 import type { Metadata } from "next";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Journal",
-  description: "正式文章、长篇随笔、技术记录和完整思考。",
+  description: "长篇文章、正式随笔、技术记录和完整思考。",
 };
 
-export default function JournalPage() {
-  const posts = getPostsByType("journal");
+export default async function JournalPage() {
+  const posts = await getContentPostsByType("journal");
 
   return (
-    <main id="top">
-      <section className="py-10 md:py-16">
-        <p className="text-sm uppercase tracking-[0.12em] text-muted-foreground">
+    <main className="mx-auto w-full max-w-6xl px-4 py-24 md:px-8">
+      <header className="mb-14 border-b border-border pb-10">
+        <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">
           Journal
         </p>
-        <h1 className="mt-5 max-w-5xl text-balance text-6xl font-medium leading-none tracking-tight md:text-8xl">
-          长文章、项目复盘和完整思考。
+        <h1 className="mt-4 max-w-4xl text-balance text-5xl font-medium tracking-tight md:text-7xl">
+          长文章和完整思考。
         </h1>
-        <p className="mt-7 max-w-2xl text-lg leading-8 text-muted-foreground">
-          这里放正式内容。页面可以有轻微进入感，但阅读本身保持安静。
-        </p>
-      </section>
-      <PostList posts={posts} eyebrow="Journal" />
+      </header>
+      <PostList posts={posts} />
       <ContactFooter />
     </main>
   );

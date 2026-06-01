@@ -96,9 +96,7 @@ export function CommentBox({ postType, postSlug }: CommentBoxProps) {
     try {
       const response = await fetch("/api/comments", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           postType,
           postSlug,
@@ -114,10 +112,9 @@ export function CommentBox({ postType, postSlug }: CommentBoxProps) {
       }
 
       const data = (await response.json()) as { comment?: ApiComment };
-      const createdComment = data.comment;
-      if (!createdComment) return;
+      if (!data.comment) return;
 
-      setComments((current) => [toCommentItem(createdComment), ...current]);
+      setComments((current) => [toCommentItem(data.comment!), ...current]);
       setContent("");
       setReplyTo(null);
       setStatus("已发送。");
@@ -134,13 +131,12 @@ export function CommentBox({ postType, postSlug }: CommentBoxProps) {
     if (!response.ok) return;
 
     const data = (await response.json()) as { comment?: ApiComment };
-    const updatedComment = data.comment;
-    if (!updatedComment) return;
+    if (!data.comment) return;
 
     setComments((current) =>
       current.map((comment) =>
         comment.id === commentId
-          ? { ...comment, likeCount: updatedComment.likeCount }
+          ? { ...comment, likeCount: data.comment!.likeCount }
           : comment
       )
     );
@@ -170,17 +166,9 @@ export function CommentBox({ postType, postSlug }: CommentBoxProps) {
     return (
       <article
         key={comment.id}
-        className={[
-          "grid gap-4 py-5",
-          isReply ? "grid-cols-[32px_1fr] pl-6" : "grid-cols-[40px_1fr]",
-        ].join(" ")}
+        className={["grid gap-4 py-5", isReply ? "grid-cols-[32px_1fr] pl-6" : "grid-cols-[40px_1fr]"].join(" ")}
       >
-        <div
-          className={[
-            "grid place-items-center rounded-full bg-foreground text-background",
-            isReply ? "size-8 text-xs" : "size-10 text-sm",
-          ].join(" ")}
-        >
+        <div className={["grid place-items-center rounded-full bg-foreground text-background", isReply ? "size-8 text-xs" : "size-10 text-sm"].join(" ")}>
           {comment.name.slice(0, 1).toUpperCase()}
         </div>
         <div>
@@ -192,36 +180,21 @@ export function CommentBox({ postType, postSlug }: CommentBoxProps) {
             {comment.content}
           </p>
           <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
-            <button
-              className="transition hover:text-foreground"
-              onClick={() => setReplyTo(comment)}
-              type="button"
-            >
+            <button className="transition hover:text-foreground" onClick={() => setReplyTo(comment)} type="button">
               Reply
             </button>
-            <button
-              className="transition hover:text-foreground"
-              onClick={() => like(comment.id)}
-              type="button"
-            >
+            <button className="transition hover:text-foreground" onClick={() => like(comment.id)} type="button">
               Like {comment.likeCount > 0 ? comment.likeCount : ""}
             </button>
             {comment.canDelete ? (
-              <button
-                className="transition hover:text-foreground"
-                onClick={() => remove(comment.id)}
-                type="button"
-              >
+              <button className="transition hover:text-foreground" onClick={() => remove(comment.id)} type="button">
                 Delete
               </button>
             ) : null}
           </div>
           {replies.length > 0 ? (
             <div className="mt-4 border-l border-border">
-              {replies
-                .slice()
-                .reverse()
-                .map((reply) => renderComment(reply, true))}
+              {replies.slice().reverse().map((reply) => renderComment(reply, true))}
             </div>
           ) : null}
         </div>
@@ -255,11 +228,7 @@ export function CommentBox({ postType, postSlug }: CommentBoxProps) {
         {replyTo ? (
           <div className="flex items-center justify-between rounded-md bg-background px-3 py-2 text-xs text-muted-foreground">
             <span>Replying to {replyTo.name}</span>
-            <button
-              className="transition hover:text-foreground"
-              onClick={() => setReplyTo(null)}
-              type="button"
-            >
+            <button className="transition hover:text-foreground" onClick={() => setReplyTo(null)} type="button">
               Cancel
             </button>
           </div>
@@ -278,15 +247,10 @@ export function CommentBox({ postType, postSlug }: CommentBoxProps) {
           className="resize-none rounded-md border border-border bg-background px-3 py-2 text-sm leading-6 outline-none focus:ring-2 focus:ring-ring"
         />
         <div className="flex flex-wrap items-center gap-3">
-          <button
-            disabled={isSending}
-            className="w-fit rounded-full bg-foreground px-5 py-2 text-sm text-background transition hover:opacity-85 disabled:opacity-50"
-          >
+          <button disabled={isSending} className="w-fit rounded-full bg-foreground px-5 py-2 text-sm text-background transition hover:opacity-85 disabled:opacity-50">
             {isSending ? "Sending" : replyTo ? "Reply" : "Send"}
           </button>
-          {status ? (
-            <span className="text-xs text-muted-foreground">{status}</span>
-          ) : null}
+          {status ? <span className="text-xs text-muted-foreground">{status}</span> : null}
         </div>
       </form>
 
