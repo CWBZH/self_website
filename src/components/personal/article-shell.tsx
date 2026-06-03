@@ -1,6 +1,11 @@
 import { CommentBox } from "@/components/personal/comment-box";
 import { ContactFooter } from "@/components/personal/contact-footer";
-import { getPostCover, getPostPath, type PersonalPost } from "@/lib/content";
+import {
+  getPostCollectionPath,
+  getPostCover,
+  getPostPath,
+  type PersonalPost,
+} from "@/lib/content";
 import { mdxComponents } from "@/mdx-components";
 import { MDXContent } from "@content-collections/mdx/react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -76,7 +81,7 @@ export function ArticleShell({
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 md:px-8" id="top">
       <Link
-        href={type === "garden" ? "/garden" : `/${type}`}
+        href={getPostCollectionPath(type)}
         className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground"
       >
         <ArrowLeft className="size-4" />

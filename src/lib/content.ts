@@ -90,7 +90,12 @@ export function getPostPath(post: PersonalPost | StaticPost) {
     return `/garden/${slug}`;
   }
 
-  return `/${post.type}/${slug}`;
+  return `${getPostCollectionPath(post.type)}/${slug}`;
+}
+
+export function getPostCollectionPath(type: PersonalPostType) {
+  if (type === "note") return "/notes";
+  return `/${type}`;
 }
 
 export function getStaticPostsByType(type: PersonalPostType) {
