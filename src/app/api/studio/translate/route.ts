@@ -30,6 +30,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ translation });
   } catch (error) {
     const message = error instanceof Error ? error.message : "TRANSLATION_FAILED";
+    console.error("[studio.translate] failed", {
+      error: message,
+      titleLength: String(body?.title ?? "").length,
+      summaryLength: String(body?.summary ?? "").length,
+      contentLength: String(body?.content ?? "").length,
+      targetLanguage,
+    });
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

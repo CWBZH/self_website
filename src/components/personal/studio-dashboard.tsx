@@ -441,7 +441,7 @@ export function StudioDashboard() {
       } | null;
 
       if (!response.ok || !data?.translation) {
-        setStatus(data?.error === "TRANSLATION_NOT_CONFIGURED" ? "Translation API is not configured on the server." : "Translation failed.");
+        setStatus(data?.error === "TRANSLATION_NOT_CONFIGURED" ? "Translation API is not configured on the server." : `Translation failed: ${data?.error ?? "unknown error"}`);
         return;
       }
 
