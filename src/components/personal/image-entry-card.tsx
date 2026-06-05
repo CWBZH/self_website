@@ -1,6 +1,12 @@
 "use client";
 
-import { getPostCover, getPostPath, type PersonalPost } from "@/lib/content";
+import {
+  getPostCover,
+  getPostPath,
+  withLanguagePath,
+  type PersonalPost,
+  type PersonalPostLanguage,
+} from "@/lib/content";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,6 +14,7 @@ import Link from "next/link";
 type ImageEntryCardProps = {
   post: PersonalPost;
   size?: "standard" | "wide" | "featured";
+  language?: PersonalPostLanguage;
 };
 
 function heightClass(size: ImageEntryCardProps["size"]) {
@@ -16,8 +23,8 @@ function heightClass(size: ImageEntryCardProps["size"]) {
   return "min-h-[380px]";
 }
 
-export function ImageEntryCard({ post, size = "standard" }: ImageEntryCardProps) {
-  const href = getPostPath(post);
+export function ImageEntryCard({ post, size = "standard", language = "zh" }: ImageEntryCardProps) {
+  const href = withLanguagePath(getPostPath(post), language);
   const cover = getPostCover(post);
 
   return (

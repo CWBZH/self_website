@@ -1,4 +1,5 @@
 import { ArticleShell } from "@/components/personal/article-shell";
+import { resolveLanguage } from "@/lib/content";
 import {
   getAdjacentContentPosts,
   getContentPostByRoute,
@@ -10,6 +11,7 @@ export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ lang?: string }>;
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -29,13 +31,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function NotePostPage({ params }: PageProps) {
+export default async function NotePostPage({ params, searchParams }: PageProps) {
   const { slug } = await params;
+  const language = resolveLanguage((await searchParams)?.lang);
   const post = await getContentPostByRoute("note", slug);
 
   if (!post) notFound();
 
   const adjacent = await getAdjacentContentPosts("note", slug);
 
-  return <ArticleShell post={post} type="note" {...adjacent} />;
+  return <ArticleShell post={post} type="note" language={language} {...adjacent} />;
 }

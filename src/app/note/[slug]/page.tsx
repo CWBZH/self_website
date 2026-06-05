@@ -4,9 +4,11 @@ export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ lang?: string }>;
 };
 
-export default async function NoteCompatDetailPage({ params }: PageProps) {
+export default async function NoteCompatDetailPage({ params, searchParams }: PageProps) {
   const { slug } = await params;
-  redirect(`/notes/${slug}`);
+  const lang = (await searchParams)?.lang;
+  redirect(lang === "en" ? `/notes/${slug}?lang=en` : `/notes/${slug}`);
 }

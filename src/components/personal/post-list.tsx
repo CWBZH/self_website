@@ -1,4 +1,10 @@
-import { getPostCover, getPostPath, type PersonalPost } from "@/lib/content";
+import {
+  getPostCover,
+  getPostPath,
+  withLanguagePath,
+  type PersonalPost,
+  type PersonalPostLanguage,
+} from "@/lib/content";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,6 +12,7 @@ import Link from "next/link";
 type PostListProps = {
   posts: PersonalPost[];
   emptyText?: string;
+  language?: PersonalPostLanguage;
 };
 
 function formatDate(value: string) {
@@ -16,7 +23,7 @@ function formatDate(value: string) {
   }).format(new Date(value));
 }
 
-export function PostList({ posts, emptyText = "No published content yet." }: PostListProps) {
+export function PostList({ posts, emptyText = "No published content yet.", language = "zh" }: PostListProps) {
   if (posts.length === 0) {
     return (
       <div className="rounded-3xl border border-dashed border-border p-10 text-muted-foreground">
@@ -30,7 +37,7 @@ export function PostList({ posts, emptyText = "No published content yet." }: Pos
       {posts.map((post) => (
         <Link
           key={post.id}
-          href={getPostPath(post)}
+          href={withLanguagePath(getPostPath(post), language)}
           className="group grid gap-5 rounded-3xl border border-border p-4 transition hover:bg-muted/50 md:grid-cols-[220px_1fr_auto] md:items-center"
         >
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-muted">

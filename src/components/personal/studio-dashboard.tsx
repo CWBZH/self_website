@@ -36,6 +36,16 @@ type StudioPost = {
   status: "draft" | "published";
   tags: string[];
   readingTime?: string;
+  translations?: {
+    en?: {
+      title?: string;
+      summary?: string;
+      content?: string;
+      tags?: string[];
+      readingTime?: string;
+      updatedAt?: string;
+    };
+  };
   publishedAt: string;
   updatedAt?: string;
   createdAt: string;
@@ -91,6 +101,11 @@ type PostForm = {
   status: "draft" | "published";
   tags: string;
   readingTime: string;
+  translationEnTitle: string;
+  translationEnSummary: string;
+  translationEnContent: string;
+  translationEnTags: string;
+  translationEnReadingTime: string;
   publishedAt: string;
 };
 
@@ -105,6 +120,11 @@ const emptyPost: PostForm = {
   status: "draft",
   tags: "",
   readingTime: "",
+  translationEnTitle: "",
+  translationEnSummary: "",
+  translationEnContent: "",
+  translationEnTags: "",
+  translationEnReadingTime: "",
   publishedAt: new Date().toISOString(),
 };
 
@@ -164,6 +184,11 @@ function postToForm(post: StudioPost): PostForm {
     status: post.status,
     tags: post.tags.join(", "),
     readingTime: post.readingTime ?? "",
+    translationEnTitle: post.translations?.en?.title ?? "",
+    translationEnSummary: post.translations?.en?.summary ?? "",
+    translationEnContent: post.translations?.en?.content ?? "",
+    translationEnTags: post.translations?.en?.tags?.join(", ") ?? "",
+    translationEnReadingTime: post.translations?.en?.readingTime ?? "",
     publishedAt: post.publishedAt,
   };
 }
@@ -184,6 +209,15 @@ function postPayload(form: PostForm, status?: "draft" | "published") {
     status: status ?? form.status,
     tags: form.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
     readingTime: form.readingTime,
+    translations: {
+      en: {
+        title: form.translationEnTitle,
+        summary: form.translationEnSummary,
+        content: form.translationEnContent,
+        tags: form.translationEnTags.split(",").map((tag) => tag.trim()).filter(Boolean),
+        readingTime: form.translationEnReadingTime,
+      },
+    },
     publishedAt: form.publishedAt,
   };
 }
@@ -208,6 +242,7 @@ export function StudioDashboard() {
   const [status, setStatus] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
   const [commentFilter, setCommentFilter] = useState<ModerationFilter>("all");
   const [messageFilter, setMessageFilter] = useState<ModerationFilter>("all");
   const [commentSearch, setCommentSearch] = useState("");
@@ -371,6 +406,59 @@ export function StudioDashboard() {
     }
   }
 
+  async function generateEnglishTranslation() {
+    if (!postForm.title.trim() || !postForm.content.trim()) {
+      setStatus("Title and Markdown content are required before translation.");
+      return;
+    }
+
+    setIsTranslating(true);
+    setStatus("Generating English translation...");
+
+    try {
+      const response = await fetch("/api/studio/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          targetLanguage: "en",
+          title: postForm.title,
+          summary: postForm.summary,
+          content: postForm.content,
+          tags: postForm.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
+          readingTime: postForm.readingTime,
+        }),
+      });
+
+      const data = (await response.json().catch(() => null)) as {
+        translation?: {
+          title?: string;
+          summary?: string;
+          content?: string;
+          tags?: string[];
+          readingTime?: string;
+        };
+        error?: string;
+      } | null;
+
+      if (!response.ok || !data?.translation) {
+        setStatus(data?.error === "TRANSLATION_NOT_CONFIGURED" ? "Translation API is not configured on the server." : "Translation failed.");
+        return;
+      }
+
+      setPostForm((current) => ({
+        ...current,
+        translationEnTitle: data.translation?.title ?? "",
+        translationEnSummary: data.translation?.summary ?? "",
+        translationEnContent: data.translation?.content ?? "",
+        translationEnTags: data.translation?.tags?.join(", ") ?? "",
+        translationEnReadingTime: data.translation?.readingTime ?? "",
+      }));
+      setStatus("English translation generated. Review it, then save draft or publish.");
+    } finally {
+      setIsTranslating(false);
+    }
+  }
+
   async function updateModeration(
     kind: "comments" | "messages",
     id: string,
@@ -495,6 +583,26 @@ export function StudioDashboard() {
             </div>
             <label className="grid gap-2 text-sm">Tags, comma separated<input className={inputClass} value={postForm.tags} onChange={(event) => updatePost("tags", event.target.value)} /></label>
             <label className="grid gap-2 text-sm">Markdown<textarea className="min-h-[420px] rounded-2xl border border-border bg-background px-4 py-3 font-mono text-sm leading-7 outline-none focus:ring-2 focus:ring-ring" value={postForm.content} onChange={(event) => updatePost("content", event.target.value)} /></label>
+            <section className="grid gap-4 rounded-3xl border border-border bg-muted/20 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-medium">English translation</h2>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                    Server-side API only. Visitors read the saved translation with ?lang=en.
+                  </p>
+                </div>
+                <button disabled={isTranslating} className="rounded-full border border-border px-4 py-2 text-xs transition hover:bg-muted disabled:opacity-50" type="button" onClick={generateEnglishTranslation}>
+                  {isTranslating ? "Translating..." : "Generate EN"}
+                </button>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="grid gap-2 text-sm">EN title<input className={inputClass} value={postForm.translationEnTitle} onChange={(event) => updatePost("translationEnTitle", event.target.value)} /></label>
+                <label className="grid gap-2 text-sm">EN reading time<input className={inputClass} value={postForm.translationEnReadingTime} onChange={(event) => updatePost("translationEnReadingTime", event.target.value)} /></label>
+              </div>
+              <label className="grid gap-2 text-sm">EN summary<textarea className="min-h-20 rounded-xl border border-border bg-background px-3 py-2 leading-6 outline-none focus:ring-2 focus:ring-ring" value={postForm.translationEnSummary} onChange={(event) => updatePost("translationEnSummary", event.target.value)} /></label>
+              <label className="grid gap-2 text-sm">EN tags, comma separated<input className={inputClass} value={postForm.translationEnTags} onChange={(event) => updatePost("translationEnTags", event.target.value)} /></label>
+              <label className="grid gap-2 text-sm">EN Markdown<textarea className="min-h-[300px] rounded-2xl border border-border bg-background px-4 py-3 font-mono text-sm leading-7 outline-none focus:ring-2 focus:ring-ring" value={postForm.translationEnContent} onChange={(event) => updatePost("translationEnContent", event.target.value)} /></label>
+            </section>
             <div className="flex flex-wrap items-center gap-3">
               <button disabled={isSaving} className="rounded-full border border-border px-5 py-2 text-sm transition hover:bg-muted disabled:opacity-50" type="button" onClick={() => savePost("draft")}>Save draft</button>
               <button disabled={isSaving} className="rounded-full bg-foreground px-5 py-2 text-sm text-background transition hover:opacity-85 disabled:opacity-50" type="button" onClick={() => savePost("published")}>Publish</button>

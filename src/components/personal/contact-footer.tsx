@@ -1,8 +1,9 @@
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { getSiteSettings } from "@/lib/server/site-settings";
+import { withLanguagePath, type PersonalPostLanguage } from "@/lib/content";
 
-export async function ContactFooter() {
+export async function ContactFooter({ language = "zh" }: { language?: PersonalPostLanguage }) {
   const settings = await getSiteSettings();
   const links = [
     settings.email ? ["Email", `mailto:${settings.email}`] : null,
@@ -24,14 +25,14 @@ export async function ContactFooter() {
         {links.map(([label, href]) => {
           const isExternal = href.startsWith("http");
           return (
-            <Link key={label} href={href} target={isExternal ? "_blank" : undefined} rel={isExternal ? "noreferrer" : undefined} className="group inline-flex items-center gap-2 rounded-full border border-background/25 px-4 py-2 text-sm transition hover:bg-background hover:text-foreground">
+            <Link key={label} href={withLanguagePath(href, language)} target={isExternal ? "_blank" : undefined} rel={isExternal ? "noreferrer" : undefined} className="group inline-flex items-center gap-2 rounded-full border border-background/25 px-4 py-2 text-sm transition hover:bg-background hover:text-foreground">
               {label}
               <ArrowUpRight className="size-4 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </Link>
           );
         })}
         {settings.showGardenDot ? (
-          <Link href="/garden" aria-label="Open hidden garden" className="ml-auto grid size-8 place-items-center rounded-full text-3xl leading-none text-background/45 transition hover:bg-background hover:text-foreground">
+          <Link href={withLanguagePath("/garden", language)} aria-label="Open hidden garden" className="ml-auto grid size-8 place-items-center rounded-full text-3xl leading-none text-background/45 transition hover:bg-background hover:text-foreground">
             .
           </Link>
         ) : null}

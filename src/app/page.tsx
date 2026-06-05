@@ -1,15 +1,26 @@
 import { ContactFooter } from "@/components/personal/contact-footer";
 import { ImageEntryCard } from "@/components/personal/image-entry-card";
+import {
+  localizePost,
+  resolveLanguage,
+  withLanguagePath,
+} from "@/lib/content";
 import { getSiteSettings } from "@/lib/server/site-settings";
 import { getPublicContentPosts } from "@/lib/server/content-service";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-export default async function Page() {
+type PageProps = {
+  searchParams?: Promise<{ lang?: string }>;
+};
+
+export default async function Page({ searchParams }: PageProps) {
+  const language = resolveLanguage((await searchParams)?.lang);
   const [posts, settings] = await Promise.all([getPublicContentPosts(), getSiteSettings()]);
-  const featured = posts[0];
-  const gridPosts = posts.slice(1, 7);
+  const localizedPosts = posts.map((post) => localizePost(post, language));
+  const featured = localizedPosts[0];
+  const gridPosts = localizedPosts.slice(1, 7);
 
   return (
     <main id="top" className="mx-auto w-full max-w-7xl px-4 py-6 md:px-8">
@@ -21,21 +32,21 @@ export default async function Page() {
           {settings.homeTitle}
         </h1>
         <div className="mt-8 flex flex-wrap gap-3 text-sm text-muted-foreground">
-          <Link className="rounded-full border border-border px-4 py-2 transition hover:bg-foreground hover:text-background" href="/journal">Journal</Link>
-          <Link className="rounded-full border border-border px-4 py-2 transition hover:bg-foreground hover:text-background" href="/notes">Notes</Link>
-          <Link className="rounded-full border border-border px-4 py-2 transition hover:bg-foreground hover:text-background" href="/room">Room</Link>
+          <Link className="rounded-full border border-border px-4 py-2 transition hover:bg-foreground hover:text-background" href={withLanguagePath("/journal", language)}>Journal</Link>
+          <Link className="rounded-full border border-border px-4 py-2 transition hover:bg-foreground hover:text-background" href={withLanguagePath("/notes", language)}>Notes</Link>
+          <Link className="rounded-full border border-border px-4 py-2 transition hover:bg-foreground hover:text-background" href={withLanguagePath("/room", language)}>Room</Link>
         </div>
       </section>
 
-      {featured ? <section className="py-10"><ImageEntryCard post={featured} size="featured" /></section> : null}
+      {featured ? <section className="py-10"><ImageEntryCard post={featured} size="featured" language={language} /></section> : null}
 
       <section className="grid gap-6 py-6 md:grid-cols-2 lg:grid-cols-3">
         {gridPosts.map((post, index) => (
-          <ImageEntryCard key={post.id} post={post} size={index % 3 === 0 ? "wide" : "standard"} />
+          <ImageEntryCard key={post.id} post={post} size={index % 3 === 0 ? "wide" : "standard"} language={language} />
         ))}
       </section>
 
-      <ContactFooter />
+      <ContactFooter language={language} />
     </main>
   );
 }

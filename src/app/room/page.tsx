@@ -1,5 +1,6 @@
 import { ChatRoom } from "@/components/personal/chat-room";
 import { ContactFooter } from "@/components/personal/contact-footer";
+import { resolveLanguage } from "@/lib/content";
 import { getSiteSettings } from "@/lib/server/site-settings";
 import type { Metadata } from "next";
 
@@ -9,7 +10,12 @@ export const metadata: Metadata = {
   title: "Room",
 };
 
-export default async function RoomPage() {
+type PageProps = {
+  searchParams?: Promise<{ lang?: string }>;
+};
+
+export default async function RoomPage({ searchParams }: PageProps) {
+  const language = resolveLanguage((await searchParams)?.lang);
   const settings = await getSiteSettings();
 
   return (
@@ -26,7 +32,7 @@ export default async function RoomPage() {
         </p>
       </section>
       <ChatRoom />
-      <ContactFooter />
+      <ContactFooter language={language} />
     </main>
   );
 }

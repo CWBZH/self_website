@@ -4,7 +4,10 @@ import {
   getPostCollectionPath,
   getPostCover,
   getPostPath,
+  localizePost,
+  withLanguagePath,
   type PersonalPost,
+  type PersonalPostLanguage,
 } from "@/lib/content";
 import { mdxComponents } from "@/mdx-components";
 import { MDXContent } from "@content-collections/mdx/react";
@@ -17,6 +20,7 @@ import remarkGfm from "remark-gfm";
 type ArticleShellProps = {
   post: PersonalPost;
   type: "journal" | "note" | "garden";
+  language?: PersonalPostLanguage;
   previousPost?: PersonalPost | null;
   nextPost?: PersonalPost | null;
 };
@@ -73,15 +77,19 @@ function MarkdownContent({ content }: { content: string }) {
 export function ArticleShell({
   post,
   type,
+  language = "zh",
   previousPost,
   nextPost,
 }: ArticleShellProps) {
-  const cover = getPostCover(post);
+  const localizedPost = localizePost(post, language);
+  const localizedPreviousPost = previousPost ? localizePost(previousPost, language) : null;
+  const localizedNextPost = nextPost ? localizePost(nextPost, language) : null;
+  const cover = getPostCover(localizedPost);
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 md:px-8" id="top">
       <Link
-        href={getPostCollectionPath(type)}
+        href={withLanguagePath(getPostCollectionPath(type), language)}
         className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground"
       >
         <ArrowLeft className="size-4" />
@@ -92,17 +100,17 @@ export function ArticleShell({
         <header className="grid gap-8 border-b border-border pb-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
           <div>
             <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">
-              {post.type} / {formatDate(post.publishedAt)}
+              {localizedPost.type} / {formatDate(localizedPost.publishedAt)}
             </p>
             <h1 className="mt-5 text-balance text-5xl font-medium leading-none tracking-tight md:text-7xl">
-              {post.title}
+              {localizedPost.title}
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
-              {post.summary}
+              {localizedPost.summary}
             </p>
             <div className="mt-6 flex flex-wrap gap-2 text-xs text-muted-foreground">
-              {post.readingTime ? <span>{post.readingTime}</span> : null}
-              {post.tags.map((tag) => (
+              {localizedPost.readingTime ? <span>{localizedPost.readingTime}</span> : null}
+              {localizedPost.tags.map((tag) => (
                 <span key={tag} className="rounded-full border border-border px-3 py-1">
                   {tag}
                 </span>
@@ -113,7 +121,7 @@ export function ArticleShell({
           <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-muted">
             <Image
               src={cover}
-              alt={post.title}
+              alt={localizedPost.title}
               fill
               priority
               sizes="(max-width: 1024px) 100vw, 50vw"
@@ -123,18 +131,18 @@ export function ArticleShell({
         </header>
 
         <section className="prose prose-neutral mx-auto mt-12 max-w-3xl dark:prose-invert prose-headings:font-medium prose-p:leading-8 prose-img:rounded-2xl">
-          {post.source === "mdx" && post.mdx ? (
-            <MDXContent code={post.mdx} components={mdxComponents} />
+          {localizedPost.source === "mdx" && localizedPost.mdx ? (
+            <MDXContent code={localizedPost.mdx} components={mdxComponents} />
           ) : (
-            <MarkdownContent content={post.content ?? ""} />
+            <MarkdownContent content={localizedPost.content ?? ""} />
           )}
         </section>
       </article>
 
       <nav className="mx-auto mt-16 grid max-w-3xl gap-3 border-y border-border py-6 md:grid-cols-2">
-        {previousPost ? (
+        {localizedPreviousPost ? (
           <Link
-            href={getPostPath(previousPost)}
+            href={withLanguagePath(getPostPath(localizedPreviousPost), language)}
             className="group rounded-2xl border border-border p-5 transition hover:bg-muted"
           >
             <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
@@ -142,20 +150,20 @@ export function ArticleShell({
             </span>
             <span className="mt-2 flex items-center gap-2 text-lg font-medium">
               <ArrowLeft className="size-4 transition group-hover:-translate-x-1" />
-              {previousPost.title}
+              {localizedPreviousPost.title}
             </span>
           </Link>
         ) : null}
-        {nextPost ? (
+        {localizedNextPost ? (
           <Link
-            href={getPostPath(nextPost)}
+            href={withLanguagePath(getPostPath(localizedNextPost), language)}
             className="group rounded-2xl border border-border p-5 transition hover:bg-muted md:text-right"
           >
             <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
               Next
             </span>
             <span className="mt-2 flex items-center gap-2 text-lg font-medium md:justify-end">
-              {nextPost.title}
+              {localizedNextPost.title}
               <ArrowRight className="size-4 transition group-hover:translate-x-1" />
             </span>
           </Link>
@@ -163,10 +171,10 @@ export function ArticleShell({
       </nav>
 
       <div className="mx-auto max-w-3xl">
-        <CommentBox postType={post.type} postSlug={post.slug} />
+        <CommentBox postType={localizedPost.type} postSlug={localizedPost.slug} />
       </div>
 
-      <ContactFooter />
+      <ContactFooter language={language} />
     </main>
   );
 }

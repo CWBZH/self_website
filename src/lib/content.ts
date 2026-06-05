@@ -3,6 +3,20 @@ import { allPosts } from "content-collections";
 export type PersonalPostType = "journal" | "note" | "garden";
 export type PersonalPostVisibility = "public" | "garden";
 export type PersonalPostSource = "mdx" | "cms";
+export type PersonalPostLanguage = "zh" | "en";
+
+export type PersonalPostTranslation = {
+  title?: string;
+  summary?: string;
+  content?: string;
+  tags?: string[];
+  readingTime?: string;
+  updatedAt?: string;
+};
+
+export type PersonalPostTranslations = Partial<
+  Record<PersonalPostLanguage, PersonalPostTranslation>
+>;
 
 export type PersonalPost = {
   id: string;
@@ -19,6 +33,7 @@ export type PersonalPost = {
   visibility: PersonalPostVisibility;
   tags: string[];
   readingTime?: string;
+  translations?: PersonalPostTranslations;
   mdx?: string;
   content?: string;
   _meta?: { path: string };
@@ -96,6 +111,37 @@ export function getPostPath(post: PersonalPost | StaticPost) {
 export function getPostCollectionPath(type: PersonalPostType) {
   if (type === "note") return "/notes";
   return `/${type}`;
+}
+
+export function resolveLanguage(value?: string | string[] | null): PersonalPostLanguage {
+  const candidate = Array.isArray(value) ? value[0] : value;
+  return candidate === "en" ? "en" : "zh";
+}
+
+export function withLanguagePath(path: string, language: PersonalPostLanguage) {
+  if (language !== "en" || path.startsWith("http") || path.startsWith("mailto:") || path.startsWith("#")) {
+    return path;
+  }
+
+  const [pathname, hash = ""] = path.split("#");
+  const separator = pathname.includes("?") ? "&" : "?";
+  return `${pathname}${separator}lang=en${hash ? `#${hash}` : ""}`;
+}
+
+export function localizePost(post: PersonalPost, language: PersonalPostLanguage): PersonalPost {
+  if (language === "zh") return post;
+
+  const translation = post.translations?.[language];
+  if (!translation) return post;
+
+  return {
+    ...post,
+    title: translation.title?.trim() || post.title,
+    summary: translation.summary?.trim() || post.summary,
+    content: translation.content?.trim() || post.content,
+    tags: translation.tags?.length ? translation.tags : post.tags,
+    readingTime: translation.readingTime?.trim() || post.readingTime,
+  };
 }
 
 export function getStaticPostsByType(type: PersonalPostType) {

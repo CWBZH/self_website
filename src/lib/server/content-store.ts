@@ -3,6 +3,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import type {
   CmsContentRecord,
+  PersonalPostTranslations,
   PersonalPostType,
   PersonalPostVisibility,
 } from "@/lib/content";
@@ -32,6 +33,7 @@ type CmsPostInput = {
   readingTime?: string;
   publishedAt?: string;
   author?: string;
+  translations?: PersonalPostTranslations;
 };
 
 const dataDir = path.join(process.cwd(), "data");
@@ -60,6 +62,50 @@ function normalizeTags(tags: unknown) {
     .map((tag) => String(tag).trim())
     .filter(Boolean)
     .slice(0, 12);
+}
+
+function normalizeTranslation(value: unknown) {
+  if (!value || typeof value !== "object") return undefined;
+
+  const input = value as Record<string, unknown>;
+  const title = String(input.title ?? "").trim();
+  const summary = String(input.summary ?? "").trim();
+  const content = String(input.content ?? "").trim();
+  const readingTime = String(input.readingTime ?? "").trim();
+  const tags = normalizeTags(input.tags);
+
+  if (!title && !summary && !content && !readingTime && tags.length === 0) {
+    return undefined;
+  }
+
+  return {
+    title: title || undefined,
+    summary: summary || undefined,
+    content: content || undefined,
+    readingTime: readingTime || undefined,
+    tags,
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+function normalizeTranslations(input: unknown, current?: PersonalPostTranslations) {
+  const translations: PersonalPostTranslations = { ...(current ?? {}) };
+
+  if (!input || typeof input !== "object") {
+    return Object.keys(translations).length ? translations : undefined;
+  }
+
+  const incoming = input as Record<string, unknown>;
+  const en = normalizeTranslation(incoming.en);
+  const zh = normalizeTranslation(incoming.zh);
+
+  if (en) translations.en = en;
+  else if ("en" in incoming) delete translations.en;
+
+  if (zh) translations.zh = zh;
+  else if ("zh" in incoming) delete translations.zh;
+
+  return Object.keys(translations).length ? translations : undefined;
 }
 
 async function ensureStore() {
@@ -115,6 +161,7 @@ function normalizeInput(input: CmsPostInput, current?: StoredCmsPost) {
       String(input.readingTime ?? current?.readingTime ?? "").trim() || undefined,
     author: String(input.author ?? current?.author ?? "").trim() || undefined,
     publishedAt: String(input.publishedAt ?? current?.publishedAt ?? now).trim(),
+    translations: normalizeTranslations(input.translations, current?.translations),
     updatedAt: now,
   };
 }

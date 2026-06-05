@@ -29,6 +29,7 @@ function toPublishedPost(post: StoredCmsPost) {
     visibility: post.visibility,
     tags: post.tags,
     readingTime: post.readingTime,
+    translations: post.translations,
     content: post.content,
   });
 }
