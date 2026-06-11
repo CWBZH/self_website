@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 type ModerationStatus = "visible" | "hidden" | "deleted";
 type ModerationFilter = "all" | ModerationStatus;
@@ -238,8 +238,11 @@ export function StudioDashboard() {
   const [messages, setMessages] = useState<StudioMessage[]>([]);
   const [postForm, setPostForm] = useState<PostForm>(emptyPost);
   const [settingsForm, setSettingsForm] = useState<SettingsForm>(emptySettings);
+  const [authState, setAuthState] = useState<"checking" | "authenticated" | "unauthenticated">("checking");
+  const [password, setPassword] = useState("");
   const [activeTab, setActiveTab] = useState<"posts" | "settings" | "comments" | "room">("posts");
   const [status, setStatus] = useState("");
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
@@ -261,6 +264,15 @@ export function StudioDashboard() {
       fetch("/api/studio/comments"),
       fetch("/api/studio/messages"),
     ]);
+
+    if ([postsResponse, settingsResponse, commentsResponse, messagesResponse].some((response) => response.status === 401)) {
+      setAuthState("unauthenticated");
+      setStatus("Session expired. Please login again.");
+      setPosts([]);
+      setComments([]);
+      setMessages([]);
+      return;
+    }
 
     if (postsResponse.ok) {
       const data = (await postsResponse.json()) as { posts?: StudioPost[] };
@@ -284,7 +296,24 @@ export function StudioDashboard() {
   }
 
   useEffect(() => {
-    loadStudioData().catch(() => setStatus("Load failed. Please login again or refresh."));
+    async function initializeStudio() {
+      const response = await fetch("/api/studio/me", { cache: "no-store" });
+      const data = (await response.json().catch(() => null)) as { authenticated?: boolean } | null;
+
+      if (!response.ok || !data?.authenticated) {
+        setAuthState("unauthenticated");
+        setStatus("");
+        return;
+      }
+
+      setAuthState("authenticated");
+      await loadStudioData();
+    }
+
+    initializeStudio().catch(() => {
+      setAuthState("unauthenticated");
+      setStatus("Session check failed. Please login again.");
+    });
   }, []);
 
   function updatePost<K extends keyof PostForm>(key: K, value: PostForm[K]) {
@@ -297,6 +326,54 @@ export function StudioDashboard() {
 
   function updateSettings<K extends keyof SettingsForm>(key: K, value: SettingsForm[K]) {
     setSettingsForm((current) => ({ ...current, [key]: value }));
+  }
+
+  function handleUnauthorized(response: Response) {
+    if (response.status !== 401) return false;
+    setAuthState("unauthenticated");
+    setStatus("Session expired. Please login again.");
+    return true;
+  }
+
+  async function login(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!password.trim()) {
+      setStatus("Password is required.");
+      return;
+    }
+
+    setIsLoggingIn(true);
+    setStatus("");
+
+    try {
+      const response = await fetch("/api/studio/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      const data = (await response.json().catch(() => null)) as { error?: string } | null;
+
+      if (!response.ok) {
+        setStatus(
+          data?.error === "INVALID_PASSWORD"
+            ? "Invalid password."
+            : data?.error === "RATE_LIMITED"
+              ? "Too many attempts. Try again later."
+              : data?.error === "STUDIO_NOT_CONFIGURED"
+                ? "Studio password is not configured on the server."
+                : "Login failed."
+        );
+        return;
+      }
+
+      setPassword("");
+      setAuthState("authenticated");
+      await loadStudioData();
+      setStatus("");
+    } finally {
+      setIsLoggingIn(false);
+    }
   }
 
   function newPost(type: PostForm["type"] = "journal") {
@@ -329,6 +406,8 @@ export function StudioDashboard() {
         body: JSON.stringify(postPayload(postForm, nextStatus)),
       });
 
+      if (handleUnauthorized(response)) return;
+
       if (!response.ok) {
         setStatus("Save failed.");
         return;
@@ -356,6 +435,8 @@ export function StudioDashboard() {
         body: JSON.stringify(settingsPayload(settingsForm)),
       });
 
+      if (handleUnauthorized(response)) return;
+
       if (!response.ok) {
         setStatus("Settings save failed.");
         return;
@@ -373,6 +454,7 @@ export function StudioDashboard() {
     if (!confirm("Delete this post permanently?")) return;
 
     const response = await fetch(`/api/studio/posts/${encodeURIComponent(id)}`, { method: "DELETE" });
+    if (handleUnauthorized(response)) return;
     if (!response.ok) {
       setStatus("Delete failed.");
       return;
@@ -393,6 +475,8 @@ export function StudioDashboard() {
     try {
       const response = await fetch("/api/studio/uploads", { method: "POST", body });
       const data = (await response.json()) as { url?: string; error?: string };
+
+      if (handleUnauthorized(response)) return;
 
       if (!response.ok || !data.url) {
         setStatus(data.error === "FILE_TOO_LARGE" ? "Image must be under 5MB." : "Upload failed.");
@@ -440,6 +524,8 @@ export function StudioDashboard() {
         error?: string;
       } | null;
 
+      if (handleUnauthorized(response)) return;
+
       if (!response.ok || !data?.translation) {
         setStatus(data?.error === "TRANSLATION_NOT_CONFIGURED" ? "Translation API is not configured on the server." : `Translation failed: ${data?.error ?? "unknown error"}`);
         return;
@@ -472,6 +558,8 @@ export function StudioDashboard() {
         body: JSON.stringify({ status: nextStatus }),
       });
 
+      if (handleUnauthorized(response)) return;
+
       if (!response.ok) {
         setStatus("Moderation update failed. Please login again or retry.");
         return;
@@ -493,6 +581,8 @@ export function StudioDashboard() {
         method: "DELETE",
       });
 
+      if (handleUnauthorized(response)) return;
+
       if (!response.ok) {
         setStatus("Permanent delete failed. Please login again or retry.");
         return;
@@ -507,10 +597,57 @@ export function StudioDashboard() {
 
   async function logout() {
     await fetch("/api/studio/logout", { method: "POST" });
-    window.location.reload();
+    setPosts([]);
+    setComments([]);
+    setMessages([]);
+    setPostForm(emptyPost);
+    setAuthState("unauthenticated");
+    setStatus("");
   }
 
   const inputClass = "rounded-xl border border-border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring";
+
+  if (authState === "checking") {
+    return (
+      <div className="mx-auto grid min-h-[60vh] w-full max-w-xl place-items-center px-4 py-8 md:px-8">
+        <div className="w-full rounded-3xl border border-border p-6 text-center">
+          <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">Studio</p>
+          <h1 className="mt-3 text-3xl font-medium tracking-tight">Checking session</h1>
+          <p className="mt-3 text-sm text-muted-foreground">Please wait...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (authState === "unauthenticated") {
+    return (
+      <div className="mx-auto grid min-h-[60vh] w-full max-w-xl place-items-center px-4 py-8 md:px-8">
+        <form className="grid w-full gap-5 rounded-3xl border border-border p-6" onSubmit={login}>
+          <div>
+            <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">Studio</p>
+            <h1 className="mt-3 text-4xl font-medium tracking-tight">Login required</h1>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              Your studio session is missing or expired. Login again to manage posts, translations, settings, comments, and room messages.
+            </p>
+          </div>
+          {status ? <div className="rounded-2xl border border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground">{status}</div> : null}
+          <label className="grid gap-2 text-sm">
+            Password
+            <input
+              className={inputClass}
+              type="password"
+              value={password}
+              autoFocus
+              onChange={(event) => setPassword(event.target.value)}
+            />
+          </label>
+          <button disabled={isLoggingIn} className="rounded-full bg-foreground px-5 py-2 text-sm text-background transition hover:opacity-85 disabled:opacity-50" type="submit">
+            {isLoggingIn ? "Logging in..." : "Login"}
+          </button>
+        </form>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-8 md:px-8">
