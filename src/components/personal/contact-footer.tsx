@@ -37,6 +37,13 @@ export async function ContactFooter({ language = "zh" }: { language?: PersonalPo
           </Link>
         ) : null}
       </div>
+      {settings.icpNumber ? (
+        <div className="mt-8 border-t border-background/10 pt-5 text-xs tracking-[0.18em] text-background/45">
+          <Link href={settings.icpUrl || "https://beian.miit.gov.cn"} target="_blank" rel="noreferrer" className="transition hover:text-background">
+            {settings.icpNumber}
+          </Link>
+        </div>
+      ) : null}
     </footer>
   );
 }

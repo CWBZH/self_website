@@ -82,6 +82,8 @@ type SiteSettings = {
   email: string;
   githubUrl: string;
   socialUrl: string;
+  icpNumber: string;
+  icpUrl: string;
   showGardenDot: boolean;
 };
 
@@ -159,6 +161,8 @@ const emptySettings: SettingsForm = {
   email: "",
   githubUrl: "",
   socialUrl: "",
+  icpNumber: "粤ICP备2026074388号-1",
+  icpUrl: "https://beian.miit.gov.cn",
   showGardenDot: true,
 };
 
@@ -804,6 +808,10 @@ function SettingsPanel({
       <div className="grid gap-4 md:grid-cols-2">
         <label className="grid gap-2 text-sm">GitHub<input className={inputClass} value={form.githubUrl} onChange={(event) => onChange("githubUrl", event.target.value)} /></label>
         <label className="grid gap-2 text-sm">Social URL<input className={inputClass} value={form.socialUrl} onChange={(event) => onChange("socialUrl", event.target.value)} /></label>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2">
+        <label className="grid gap-2 text-sm">ICP number<input className={inputClass} value={form.icpNumber} onChange={(event) => onChange("icpNumber", event.target.value)} /></label>
+        <label className="grid gap-2 text-sm">ICP URL<input className={inputClass} value={form.icpUrl} onChange={(event) => onChange("icpUrl", event.target.value)} /></label>
       </div>
       <div className="grid gap-4 border-t border-border pt-5 md:grid-cols-2">
         <label className="grid gap-2 text-sm">Home eyebrow<input className={inputClass} value={form.homeEyebrow} onChange={(event) => onChange("homeEyebrow", event.target.value)} /></label>

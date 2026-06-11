@@ -32,6 +32,8 @@ export type SiteSettings = {
   email: string;
   githubUrl: string;
   socialUrl: string;
+  icpNumber: string;
+  icpUrl: string;
   showGardenDot: boolean;
 };
 
@@ -70,6 +72,8 @@ export const defaultSiteSettings: SiteSettings = {
   email: "hello@example.com",
   githubUrl: "https://github.com/CWBZH",
   socialUrl: "",
+  icpNumber: "粤ICP备2026074388号-1",
+  icpUrl: "https://beian.miit.gov.cn",
   showGardenDot: true,
 };
 
@@ -128,6 +132,8 @@ export function normalizeSiteSettings(input: Partial<SiteSettings> = {}): SiteSe
     email: normalizeString(input.email, defaultSiteSettings.email),
     githubUrl: normalizeString(input.githubUrl, defaultSiteSettings.githubUrl),
     socialUrl: normalizeString(input.socialUrl, defaultSiteSettings.socialUrl),
+    icpNumber: normalizeString(input.icpNumber, defaultSiteSettings.icpNumber),
+    icpUrl: normalizeString(input.icpUrl, defaultSiteSettings.icpUrl),
     showGardenDot: input.showGardenDot ?? defaultSiteSettings.showGardenDot,
   };
 }
