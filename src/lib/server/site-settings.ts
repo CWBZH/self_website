@@ -60,13 +60,14 @@ export const defaultSiteSettings: SiteSettings = {
   aboutEyebrow: "About",
   aboutTitle: "A living archive of thoughts, images and conversations.",
   aboutParagraphs: [
-    "This is a personal digital space for essays, brief notes, visual records and conversations.",
+    "This is a personal non-commercial site for essays, brief notes, visual records, and learning notes.",
     "Journal is where longer pieces live. Notes collects smaller thoughts and everyday fragments.",
-    "Room is an open space for visitors to leave a message or start a conversation.",
+    "Public interaction features are temporarily unavailable during filing review.",
   ],
   roomEyebrow: "Room",
-  roomTitle: "A quiet room for visitors and conversations.",
-  roomDescription: "No profiles to build. No complicated social graph. Just a room for conversation.",
+  roomTitle: "Interactive features are temporarily closed.",
+  roomDescription:
+    "For public security filing review, comments, visitor messages, and the chat room are temporarily unavailable.",
   footerEyebrow: "Contact",
   footerTitle: "Let's keep in touch.",
   email: "hello@example.com",

@@ -5,6 +5,7 @@ import {
   type StoredMessage,
   type StoredPresence,
 } from "@/lib/server/personal-room-store";
+import { publicInteractionsEnabled } from "@/lib/public-interactions";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -31,6 +32,15 @@ function toPublicPresence(member: StoredPresence) {
 }
 
 export async function GET(request: Request) {
+  if (!publicInteractionsEnabled) {
+    return new Response(JSON.stringify({ error: "PUBLIC_INTERACTIONS_DISABLED" }), {
+      status: 403,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+    });
+  }
+
   const url = new URL(request.url);
   const roomId = url.searchParams.get("roomId") ?? "main";
   const visitorId = getOrCreateVisitorId(request);

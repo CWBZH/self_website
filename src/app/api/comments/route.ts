@@ -5,6 +5,7 @@ import {
   listVisibleComments,
   type StoredComment,
 } from "@/lib/server/personal-room-store";
+import { publicInteractionsEnabled } from "@/lib/public-interactions";
 import { checkRateLimit, pruneRateLimitBuckets } from "@/lib/server/rate-limit";
 import { NextResponse } from "next/server";
 
@@ -27,6 +28,10 @@ function toPublicComment(comment: StoredComment, visitorId: string) {
 }
 
 export async function GET(request: Request) {
+  if (!publicInteractionsEnabled) {
+    return NextResponse.json({ comments: [] });
+  }
+
   const url = new URL(request.url);
   const postType = url.searchParams.get("postType") ?? "";
   const postSlug = url.searchParams.get("postSlug") ?? "";
@@ -40,6 +45,10 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  if (!publicInteractionsEnabled) {
+    return NextResponse.json({ error: "PUBLIC_INTERACTIONS_DISABLED" }, { status: 403 });
+  }
+
   const body = await request.json().catch(() => null);
   const visitorId = getOrCreateVisitorId(request);
   const ipHash = getIpHash(request);

@@ -2,12 +2,13 @@ import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { getSiteSettings } from "@/lib/server/site-settings";
 import { withLanguagePath, type PersonalPostLanguage } from "@/lib/content";
+import { publicInteractionsEnabled } from "@/lib/public-interactions";
 
 export async function ContactFooter({ language = "zh" }: { language?: PersonalPostLanguage }) {
   const settings = await getSiteSettings();
   const links = [
     settings.email ? ["Email", `mailto:${settings.email}`] : null,
-    ["Room", "/room"],
+    publicInteractionsEnabled ? ["Room", "/room"] : null,
     settings.githubUrl ? ["GitHub", settings.githubUrl] : null,
     settings.socialUrl ? ["Social", settings.socialUrl] : null,
     ["Back top", "#top"],

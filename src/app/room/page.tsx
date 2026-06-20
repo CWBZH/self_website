@@ -1,6 +1,11 @@
 import { ChatRoom } from "@/components/personal/chat-room";
 import { ContactFooter } from "@/components/personal/contact-footer";
 import { resolveLanguage } from "@/lib/content";
+import {
+  interactionsDisabledMessage,
+  interactionsDisabledTitle,
+  publicInteractionsEnabled,
+} from "@/lib/public-interactions";
 import { getSiteSettings } from "@/lib/server/site-settings";
 import type { Metadata } from "next";
 
@@ -28,10 +33,24 @@ export default async function RoomPage({ searchParams }: PageProps) {
           {settings.roomTitle}
         </h1>
         <p className="mt-7 max-w-2xl text-lg leading-8 text-muted-foreground">
-          {settings.roomDescription}
+          {publicInteractionsEnabled ? settings.roomDescription : interactionsDisabledMessage}
         </p>
       </section>
-      <ChatRoom />
+      {publicInteractionsEnabled ? (
+        <ChatRoom />
+      ) : (
+        <section className="rounded-3xl border border-border bg-muted/30 p-8 md:p-12">
+          <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">
+            Filing review mode
+          </p>
+          <h2 className="mt-4 text-3xl font-medium tracking-tight">
+            {interactionsDisabledTitle}
+          </h2>
+          <p className="mt-4 max-w-2xl leading-8 text-muted-foreground">
+            The site is currently presented as a personal non-commercial blog for filing review. The room will reopen after the filing process is complete.
+          </p>
+        </section>
+      )}
       <ContactFooter language={language} />
     </main>
   );

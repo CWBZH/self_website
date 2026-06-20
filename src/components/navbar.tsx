@@ -10,6 +10,7 @@ import {
 import { Icons } from "@/components/icons";
 import { LanguageAwareAnchor } from "@/components/personal/language-aware-anchor";
 import { LanguageSwitch } from "@/components/personal/language-switch";
+import { publicInteractionsEnabled } from "@/lib/public-interactions";
 import { getSiteSettings } from "@/lib/server/site-settings";
 import { BookOpenIcon, HomeIcon, MessageCircleIcon, NotebookIcon, UserRoundIcon } from "lucide-react";
 import { Suspense } from "react";
@@ -18,9 +19,9 @@ const navItems = [
   { href: "/", icon: HomeIcon, label: "Home" },
   { href: "/journal", icon: BookOpenIcon, label: "Journal" },
   { href: "/notes", icon: NotebookIcon, label: "Notes" },
-  { href: "/room", icon: MessageCircleIcon, label: "Room" },
+  publicInteractionsEnabled ? { href: "/room", icon: MessageCircleIcon, label: "Room" } : null,
   { href: "/about", icon: UserRoundIcon, label: "About" },
-];
+].filter(Boolean) as Array<{ href: string; icon: typeof HomeIcon; label: string }>;
 
 export default async function Navbar() {
   const settings = await getSiteSettings();

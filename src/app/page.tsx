@@ -5,6 +5,7 @@ import {
   resolveLanguage,
   withLanguagePath,
 } from "@/lib/content";
+import { publicInteractionsEnabled } from "@/lib/public-interactions";
 import { getSiteSettings } from "@/lib/server/site-settings";
 import { getPublicContentPosts } from "@/lib/server/content-service";
 import Link from "next/link";
@@ -34,7 +35,9 @@ export default async function Page({ searchParams }: PageProps) {
         <div className="mt-8 flex flex-wrap gap-3 text-sm text-muted-foreground">
           <Link className="rounded-full border border-border px-4 py-2 transition hover:bg-foreground hover:text-background" href={withLanguagePath("/journal", language)}>Journal</Link>
           <Link className="rounded-full border border-border px-4 py-2 transition hover:bg-foreground hover:text-background" href={withLanguagePath("/notes", language)}>Notes</Link>
-          <Link className="rounded-full border border-border px-4 py-2 transition hover:bg-foreground hover:text-background" href={withLanguagePath("/room", language)}>Room</Link>
+          {publicInteractionsEnabled ? (
+            <Link className="rounded-full border border-border px-4 py-2 transition hover:bg-foreground hover:text-background" href={withLanguagePath("/room", language)}>Room</Link>
+          ) : null}
         </div>
       </section>
 

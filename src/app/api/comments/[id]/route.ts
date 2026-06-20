@@ -5,6 +5,7 @@ import {
   likeComment,
   type StoredComment,
 } from "@/lib/server/personal-room-store";
+import { publicInteractionsEnabled } from "@/lib/public-interactions";
 import { checkRateLimit, pruneRateLimitBuckets } from "@/lib/server/rate-limit";
 import { NextResponse } from "next/server";
 
@@ -30,6 +31,10 @@ export async function PATCH(
   request: Request,
   context: { params: Promise<{ id: string }> }
 ) {
+  if (!publicInteractionsEnabled) {
+    return NextResponse.json({ error: "PUBLIC_INTERACTIONS_DISABLED" }, { status: 403 });
+  }
+
   const visitorId = getOrCreateVisitorId(request);
   const ipHash = getIpHash(request);
   const { id } = await context.params;
@@ -69,6 +74,10 @@ export async function DELETE(
   request: Request,
   context: { params: Promise<{ id: string }> }
 ) {
+  if (!publicInteractionsEnabled) {
+    return NextResponse.json({ error: "PUBLIC_INTERACTIONS_DISABLED" }, { status: 403 });
+  }
+
   const visitorId = getOrCreateVisitorId(request);
   const { id } = await context.params;
   const comment = await deleteOwnComment(id, visitorId);
@@ -79,4 +88,3 @@ export async function DELETE(
 
   return NextResponse.json({ ok: true });
 }
-

@@ -6,6 +6,7 @@ import {
   upsertRoomPresence,
   type StoredMessage,
 } from "@/lib/server/personal-room-store";
+import { publicInteractionsEnabled } from "@/lib/public-interactions";
 import { checkRateLimit, pruneRateLimitBuckets } from "@/lib/server/rate-limit";
 import { NextResponse } from "next/server";
 
@@ -25,6 +26,10 @@ function toPublicMessage(message: StoredMessage, visitorId: string) {
 }
 
 export async function GET(request: Request) {
+  if (!publicInteractionsEnabled) {
+    return NextResponse.json({ messages: [] });
+  }
+
   const url = new URL(request.url);
   const roomId = url.searchParams.get("roomId") ?? "main";
   const visitorId = getOrCreateVisitorId(request);
@@ -36,6 +41,10 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  if (!publicInteractionsEnabled) {
+    return NextResponse.json({ error: "PUBLIC_INTERACTIONS_DISABLED" }, { status: 403 });
+  }
+
   const body = await request.json().catch(() => null);
   const visitorId = getOrCreateVisitorId(request);
   const ipHash = getIpHash(request);

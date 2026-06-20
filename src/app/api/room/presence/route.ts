@@ -4,6 +4,7 @@ import {
   upsertRoomPresence,
   type StoredPresence,
 } from "@/lib/server/personal-room-store";
+import { publicInteractionsEnabled } from "@/lib/public-interactions";
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
@@ -17,6 +18,10 @@ function toPublicPresence(member: StoredPresence) {
 }
 
 export async function GET(request: Request) {
+  if (!publicInteractionsEnabled) {
+    return NextResponse.json({ members: [], onlineCount: 0 });
+  }
+
   const url = new URL(request.url);
   const roomId = url.searchParams.get("roomId") ?? "main";
   const members = await listRoomPresence(roomId);
@@ -28,6 +33,10 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  if (!publicInteractionsEnabled) {
+    return NextResponse.json({ error: "PUBLIC_INTERACTIONS_DISABLED" }, { status: 403 });
+  }
+
   const body = await request.json().catch(() => null);
   const visitorId = getOrCreateVisitorId(request);
   await upsertRoomPresence({
@@ -51,4 +60,3 @@ export async function POST(request: Request) {
 
   return response;
 }
-

@@ -9,6 +9,7 @@ import {
   type PersonalPost,
   type PersonalPostLanguage,
 } from "@/lib/content";
+import { publicInteractionsEnabled } from "@/lib/public-interactions";
 import { mdxComponents } from "@/mdx-components";
 import { MDXContent } from "@content-collections/mdx/react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -170,9 +171,11 @@ export function ArticleShell({
         ) : null}
       </nav>
 
-      <div className="mx-auto max-w-3xl">
-        <CommentBox postType={localizedPost.type} postSlug={localizedPost.slug} />
-      </div>
+      {publicInteractionsEnabled ? (
+        <div className="mx-auto max-w-3xl">
+          <CommentBox postType={localizedPost.type} postSlug={localizedPost.slug} />
+        </div>
+      ) : null}
 
       <ContactFooter language={language} />
     </main>
