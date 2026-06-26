@@ -17,6 +17,12 @@ type ImageEntryCardProps = {
   language?: PersonalPostLanguage;
 };
 
+const typeLabels: Record<PersonalPost["type"], string> = {
+  journal: "文章",
+  note: "随笔",
+  garden: "图片记录",
+};
+
 function heightClass(size: ImageEntryCardProps["size"]) {
   if (size === "featured") return "min-h-[68vh]";
   if (size === "wide") return "min-h-[460px] lg:col-span-2";
@@ -42,9 +48,9 @@ export function ImageEntryCard({ post, size = "standard", language = "zh" }: Ima
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition duration-500 group-hover:from-black/78" />
       <div className="absolute inset-x-0 bottom-0 p-6 text-white md:p-8">
         <div className="mb-4 flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.14em] text-white/70">
-          <span>{post.type}</span>
+          <span>{typeLabels[post.type] ?? post.type}</span>
           <span>/</span>
-          <span>{post.readingTime ?? "Read"}</span>
+          <span>{post.readingTime ?? "阅读"}</span>
         </div>
         <div className="flex items-end justify-between gap-6">
           <div>
@@ -56,7 +62,7 @@ export function ImageEntryCard({ post, size = "standard", language = "zh" }: Ima
             </p>
           </div>
           <span className="hidden size-16 shrink-0 place-items-center rounded-full border border-white/30 bg-white/10 text-sm backdrop-blur transition duration-500 group-hover:bg-white group-hover:text-black md:grid">
-            Open
+            打开
           </span>
         </div>
       </div>

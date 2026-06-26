@@ -7,11 +7,11 @@ import { publicInteractionsEnabled } from "@/lib/public-interactions";
 export async function ContactFooter({ language = "zh" }: { language?: PersonalPostLanguage }) {
   const settings = await getSiteSettings();
   const links = [
-    settings.email ? ["Email", `mailto:${settings.email}`] : null,
-    publicInteractionsEnabled ? ["Room", "/room"] : null,
+    settings.email ? ["邮箱", `mailto:${settings.email}`] : null,
+    publicInteractionsEnabled ? ["聊天室", "/room"] : null,
     settings.githubUrl ? ["GitHub", settings.githubUrl] : null,
     settings.socialUrl ? ["Social", settings.socialUrl] : null,
-    ["Back top", "#top"],
+    ["返回顶部", "#top"],
   ].filter(Boolean) as Array<[string, string]>;
 
   return (

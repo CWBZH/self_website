@@ -3,7 +3,6 @@ import { ContactFooter } from "@/components/personal/contact-footer";
 import { resolveLanguage } from "@/lib/content";
 import {
   interactionsDisabledMessage,
-  interactionsDisabledTitle,
   publicInteractionsEnabled,
 } from "@/lib/public-interactions";
 import { getSiteSettings } from "@/lib/server/site-settings";
@@ -12,7 +11,7 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Room",
+  title: "交互功能暂未开放",
 };
 
 type PageProps = {
@@ -41,13 +40,13 @@ export default async function RoomPage({ searchParams }: PageProps) {
       ) : (
         <section className="rounded-3xl border border-border bg-muted/30 p-8 md:p-12">
           <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">
-            Filing review mode
+            备案审核模式
           </p>
           <h2 className="mt-4 text-3xl font-medium tracking-tight">
-            {interactionsDisabledTitle}
+            交互功能暂未开放
           </h2>
           <p className="mt-4 max-w-2xl leading-8 text-muted-foreground">
-            The site is currently presented as a personal non-commercial blog for filing review. The room will reopen after the filing process is complete.
+            本网站当前作为个人非经营性博客进行公安联网备案审核。评论、访客留言和聊天室功能暂不开放。
           </p>
         </section>
       )}

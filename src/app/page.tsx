@@ -33,10 +33,10 @@ export default async function Page({ searchParams }: PageProps) {
           {settings.homeTitle}
         </h1>
         <div className="mt-8 flex flex-wrap gap-3 text-sm text-muted-foreground">
-          <Link className="rounded-full border border-border px-4 py-2 transition hover:bg-foreground hover:text-background" href={withLanguagePath("/journal", language)}>Journal</Link>
-          <Link className="rounded-full border border-border px-4 py-2 transition hover:bg-foreground hover:text-background" href={withLanguagePath("/notes", language)}>Notes</Link>
+          <Link className="rounded-full border border-border px-4 py-2 transition hover:bg-foreground hover:text-background" href={withLanguagePath("/journal", language)}>文章</Link>
+          <Link className="rounded-full border border-border px-4 py-2 transition hover:bg-foreground hover:text-background" href={withLanguagePath("/notes", language)}>随笔</Link>
           {publicInteractionsEnabled ? (
-            <Link className="rounded-full border border-border px-4 py-2 transition hover:bg-foreground hover:text-background" href={withLanguagePath("/room", language)}>Room</Link>
+            <Link className="rounded-full border border-border px-4 py-2 transition hover:bg-foreground hover:text-background" href={withLanguagePath("/room", language)}>聊天室</Link>
           ) : null}
         </div>
       </section>

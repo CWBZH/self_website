@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Journal" };
+export const metadata: Metadata = { title: "文章" };
 
 type PageProps = {
   searchParams?: Promise<{ lang?: string }>;
