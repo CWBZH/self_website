@@ -1,11 +1,20 @@
 import { ArrowUpRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { getSiteSettings } from "@/lib/server/site-settings";
 import { withLanguagePath, type PersonalPostLanguage } from "@/lib/content";
 import { publicInteractionsEnabled } from "@/lib/public-interactions";
 
+const icpFallbackNumber = "粤ICP备2026074388号-1";
+const icpFallbackUrl = "https://beian.miit.gov.cn";
+const policeBeianNumber = "粤公网安备44011102485000号";
+const policeBeianUrl =
+  "https://beian.mps.gov.cn/#/query/webSearch?code=44011102485000";
+
 export async function ContactFooter({ language = "zh" }: { language?: PersonalPostLanguage }) {
   const settings = await getSiteSettings();
+  const icpNumber = settings.icpNumber || icpFallbackNumber;
+  const icpUrl = settings.icpUrl || icpFallbackUrl;
   const links = [
     settings.email ? ["邮箱", `mailto:${settings.email}`] : null,
     publicInteractionsEnabled ? ["聊天室", "/room"] : null,
@@ -38,13 +47,22 @@ export async function ContactFooter({ language = "zh" }: { language?: PersonalPo
           </Link>
         ) : null}
       </div>
-      {settings.icpNumber ? (
-        <div className="mt-8 border-t border-background/10 pt-5 text-xs tracking-[0.18em] text-background/45">
-          <Link href={settings.icpUrl || "https://beian.miit.gov.cn"} target="_blank" rel="noreferrer" className="transition hover:text-background">
-            {settings.icpNumber}
+      <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-background/10 pt-5 text-xs text-background/50">
+        {icpNumber ? (
+          <Link href={icpUrl} target="_blank" rel="noreferrer" className="transition hover:text-background">
+            {icpNumber}
           </Link>
-        </div>
-      ) : null}
+        ) : null}
+        <Link
+          href={policeBeianUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 transition hover:text-background"
+        >
+          <Image src="/beian.png" alt="" width={20} height={20} className="h-4 w-4" />
+          <span>{policeBeianNumber}</span>
+        </Link>
+      </div>
     </footer>
   );
 }
