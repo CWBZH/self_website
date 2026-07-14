@@ -1,0 +1,142 @@
+# Everyday Plan Codex Usage
+
+This private endpoint lets Codex write one daily plan to the hidden page:
+
+```text
+https://www.molforever.site/everyday_plan
+```
+
+The page is not linked from public navigation and is marked `noindex`, but it is still protected by a password. The write API is protected by a separate Bearer token.
+
+## Server environment variables
+
+Add these values to `/home/ubuntu/apps/personal-room/.env.production` on the server. Do not commit real secrets.
+
+```bash
+EVERYDAY_PLAN_PASSWORD=your-page-view-password
+EVERYDAY_PLAN_API_TOKEN=your-long-random-write-token
+EVERYDAY_PLAN_SESSION_SECRET=your-long-random-cookie-secret
+```
+
+Generate random values on the server:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+After editing `.env.production`, redeploy or restart the service.
+
+## Write API
+
+```text
+POST https://www.molforever.site/api/everyday-plan
+Authorization: Bearer $EVERYDAY_PLAN_API_TOKEN
+Content-Type: application/json
+```
+
+Request body:
+
+```json
+{
+  "date": "2026-07-14",
+  "title": "今日计划",
+  "focus": "完成个人网站每日计划入口测试。",
+  "blocks": [
+    {
+      "time": "07:30 - 08:00",
+      "task": "确认今天最重要的三件事"
+    },
+    {
+      "time": "09:00 - 11:00",
+      "task": "完成主要写作或开发任务"
+    }
+  ],
+  "todo": [
+    "检查每日计划页面",
+    "确认 API 写入成功",
+    "晚上补充复盘"
+  ],
+  "review": ""
+}
+```
+
+The `date` field is the unique key. Posting the same date again updates that day.
+
+## curl test
+
+```bash
+curl -X POST https://www.molforever.site/api/everyday-plan \
+  -H "Authorization: Bearer $EVERYDAY_PLAN_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "date": "2026-07-14",
+    "title": "今日计划",
+    "focus": "测试 Codex 写入每日计划。",
+    "blocks": [
+      {
+        "time": "07:30 - 08:00",
+        "task": "打开隐藏页面确认展示"
+      }
+    ],
+    "todo": [
+      "写入测试计划",
+      "检查页面是否展示",
+      "记录问题"
+    ],
+    "review": ""
+  }'
+```
+
+Expected response:
+
+```json
+{
+  "ok": true,
+  "plan": {
+    "date": "2026-07-14"
+  }
+}
+```
+
+## Read API for Codex verification
+
+```bash
+curl https://www.molforever.site/api/everyday-plan \
+  -H "Authorization: Bearer $EVERYDAY_PLAN_API_TOKEN"
+```
+
+Expected response:
+
+```json
+{
+  "plans": []
+}
+```
+
+## Daily 7 AM Codex prompt
+
+Use this prompt for the daily Codex automation:
+
+```text
+每天早上 7 点，根据我的长期目标、近期上下文和今天日期，生成一份中文每日计划，并调用我的个人网站 API 写入。
+
+要求：
+1. date 使用当天日期，格式 YYYY-MM-DD。
+2. title 使用“今日计划”或更贴合当天主题的短标题。
+3. focus 写 1 段今天最重要的主线，不超过 120 字。
+4. blocks 给出 3-6 个时间块，格式如“07:30 - 08:00”。
+5. todo 给出 5-10 个明确待办。
+6. review 先留空字符串。
+7. 用 POST https://www.molforever.site/api/everyday-plan 写入。
+8. 请求头带 Authorization: Bearer $EVERYDAY_PLAN_API_TOKEN。
+9. 写入后用 GET /api/everyday-plan 验证最新计划是否存在。
+10. 不要把 token 输出到公开内容或日志说明里。
+```
+
+## Troubleshooting
+
+`401 UNAUTHORIZED` means the Bearer token is missing or wrong.
+
+`503 EVERYDAY_PLAN_API_NOT_CONFIGURED` means the server has not configured `EVERYDAY_PLAN_API_TOKEN`.
+
+`400 INVALID_EVERYDAY_PLAN` means the request body is empty or has no usable focus, blocks, todo, or review.
