@@ -18,9 +18,9 @@ type ImageEntryCardProps = {
 };
 
 const typeLabels: Record<PersonalPost["type"], string> = {
-  journal: "文章",
-  note: "随笔",
-  garden: "图片记录",
+  journal: "Journal",
+  note: "Note",
+  garden: "Garden",
 };
 
 function heightClass(size: ImageEntryCardProps["size"]) {
@@ -50,7 +50,7 @@ export function ImageEntryCard({ post, size = "standard", language = "zh" }: Ima
         <div className="mb-4 flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.14em] text-white/70">
           <span>{typeLabels[post.type] ?? post.type}</span>
           <span>/</span>
-          <span>{post.readingTime ?? "阅读"}</span>
+          <span>{post.readingTime ?? "Read"}</span>
         </div>
         <div className="flex items-end justify-between gap-6">
           <div>
@@ -62,7 +62,7 @@ export function ImageEntryCard({ post, size = "standard", language = "zh" }: Ima
             </p>
           </div>
           <span className="hidden size-16 shrink-0 place-items-center rounded-full border border-white/30 bg-white/10 text-sm backdrop-blur transition duration-500 group-hover:bg-white group-hover:text-black md:grid">
-            打开
+            Open
           </span>
         </div>
       </div>

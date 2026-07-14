@@ -16,11 +16,11 @@ export async function ContactFooter({ language = "zh" }: { language?: PersonalPo
   const icpNumber = settings.icpNumber || icpFallbackNumber;
   const icpUrl = settings.icpUrl || icpFallbackUrl;
   const links = [
-    settings.email ? ["邮箱", `mailto:${settings.email}`] : null,
-    publicInteractionsEnabled ? ["聊天室", "/room"] : null,
+    settings.email ? ["Email", `mailto:${settings.email}`] : null,
+    publicInteractionsEnabled ? ["Room", "/room"] : null,
     settings.githubUrl ? ["GitHub", settings.githubUrl] : null,
     settings.socialUrl ? ["Social", settings.socialUrl] : null,
-    ["返回顶部", "#top"],
+    ["Back top", "#top"],
   ].filter(Boolean) as Array<[string, string]>;
 
   return (

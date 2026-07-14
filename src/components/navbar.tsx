@@ -16,11 +16,11 @@ import { BookOpenIcon, HomeIcon, MessageCircleIcon, NotebookIcon, UserRoundIcon 
 import { Suspense } from "react";
 
 const navItems = [
-  { href: "/", icon: HomeIcon, label: "首页" },
-  { href: "/journal", icon: BookOpenIcon, label: "文章" },
-  { href: "/notes", icon: NotebookIcon, label: "随笔" },
-  publicInteractionsEnabled ? { href: "/room", icon: MessageCircleIcon, label: "聊天室" } : null,
-  { href: "/about", icon: UserRoundIcon, label: "关于" },
+  { href: "/", icon: HomeIcon, label: "Home" },
+  { href: "/journal", icon: BookOpenIcon, label: "Journal" },
+  { href: "/notes", icon: NotebookIcon, label: "Notes" },
+  publicInteractionsEnabled ? { href: "/room", icon: MessageCircleIcon, label: "Room" } : null,
+  { href: "/about", icon: UserRoundIcon, label: "About" },
 ].filter(Boolean) as Array<{ href: string; icon: typeof HomeIcon; label: string }>;
 
 export default async function Navbar() {
@@ -75,12 +75,8 @@ export default async function Navbar() {
           );
         })}
         <Separator orientation="vertical" className="h-2/3 m-auto w-px bg-border" />
-        {publicInteractionsEnabled ? (
-          <>
-            <LanguageSwitch />
-            <Separator orientation="vertical" className="h-2/3 m-auto w-px bg-border" />
-          </>
-        ) : null}
+        <LanguageSwitch />
+        <Separator orientation="vertical" className="h-2/3 m-auto w-px bg-border" />
         <Tooltip>
           <TooltipTrigger asChild>
             <DockIcon className="rounded-3xl cursor-pointer size-full bg-background p-0 text-muted-foreground hover:text-foreground hover:bg-muted backdrop-blur-3xl border border-border transition-colors">
@@ -88,7 +84,7 @@ export default async function Navbar() {
             </DockIcon>
           </TooltipTrigger>
           <TooltipContent side="top" sideOffset={8} className="rounded-xl bg-primary text-primary-foreground px-4 py-2 text-sm shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)]">
-            <p>主题</p>
+            <p>Theme</p>
             <TooltipArrow className="fill-primary" />
           </TooltipContent>
         </Tooltip>

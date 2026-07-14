@@ -1,12 +1,4 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import {
-  clearEverydayPlanSessionCookie,
-  everydayPlanPasswordConfigured,
-  isEverydayPlanSessionValid,
-  setEverydayPlanSessionCookie,
-  verifyEverydayPlanPassword,
-} from "@/lib/server/everyday-plan-auth";
 import { listEverydayPlans } from "@/lib/server/everyday-plan-store";
 
 export const dynamic = "force-dynamic";
@@ -18,30 +10,6 @@ export const metadata: Metadata = {
     index: false,
     follow: false,
   },
-};
-
-async function unlockEverydayPlan(formData: FormData) {
-  "use server";
-
-  const password = String(formData.get("password") ?? "");
-
-  if (!verifyEverydayPlanPassword(password)) {
-    redirect("/everyday_plan?error=1");
-  }
-
-  await setEverydayPlanSessionCookie();
-  redirect("/everyday_plan");
-}
-
-async function logoutEverydayPlan() {
-  "use server";
-
-  await clearEverydayPlanSessionCookie();
-  redirect("/everyday_plan");
-}
-
-type EverydayPlanPageProps = {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 function EmptyState() {
@@ -58,68 +26,7 @@ function EmptyState() {
   );
 }
 
-export default async function EverydayPlanPage({ searchParams }: EverydayPlanPageProps) {
-  const resolvedSearchParams = searchParams ? await searchParams : {};
-  const hasError = resolvedSearchParams.error === "1";
-  const configured = everydayPlanPasswordConfigured();
-  const authenticated = configured ? await isEverydayPlanSessionValid() : false;
-
-  if (!configured) {
-    return (
-      <main className="mx-auto min-h-screen max-w-5xl px-6 py-16 md:py-24">
-        <section className="rounded-[2rem] border border-foreground/10 bg-foreground/[0.03] p-8 md:p-12">
-          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
-            Everyday Plan
-          </p>
-          <h1 className="mt-5 text-4xl font-medium tracking-tight md:text-6xl">
-            每日计划未配置
-          </h1>
-          <p className="mt-5 max-w-2xl text-muted-foreground">
-            请先在服务器环境变量中配置 EVERYDAY_PLAN_PASSWORD 和
-            EVERYDAY_PLAN_API_TOKEN，然后重新部署。
-          </p>
-        </section>
-      </main>
-    );
-  }
-
-  if (!authenticated) {
-    return (
-      <main className="mx-auto flex min-h-screen max-w-3xl items-center px-6 py-16">
-        <section className="w-full rounded-[2rem] border border-foreground/10 bg-foreground/[0.03] p-8 md:p-12">
-          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
-            Private Entry
-          </p>
-          <h1 className="mt-5 text-4xl font-medium tracking-tight md:text-6xl">
-            每日计划
-          </h1>
-          <p className="mt-5 text-muted-foreground">
-            这是个人隐藏入口，不在公开导航展示。请输入访问密码。
-          </p>
-          <form action={unlockEverydayPlan} className="mt-8 space-y-4">
-            <input
-              type="password"
-              name="password"
-              autoComplete="current-password"
-              placeholder="访问密码"
-              className="w-full rounded-full border border-foreground/15 bg-background px-5 py-3 outline-none transition focus:border-foreground/60"
-              required
-            />
-            {hasError ? (
-              <p className="text-sm text-red-500">密码不正确。</p>
-            ) : null}
-            <button
-              type="submit"
-              className="rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition hover:opacity-85"
-            >
-              进入计划
-            </button>
-          </form>
-        </section>
-      </main>
-    );
-  }
-
+export default async function EverydayPlanPage() {
   const plans = await listEverydayPlans();
   const [latest, ...history] = plans;
 
@@ -137,14 +44,6 @@ export default async function EverydayPlanPage({ searchParams }: EverydayPlanPag
             Codex 每天早上写入的个人计划会保存在这里。这个入口不出现在公开导航里。
           </p>
         </div>
-        <form action={logoutEverydayPlan}>
-          <button
-            type="submit"
-            className="rounded-full border border-foreground/15 px-5 py-2 text-sm transition hover:bg-foreground hover:text-background"
-          >
-            退出
-          </button>
-        </form>
       </div>
 
       <div className="mt-12">

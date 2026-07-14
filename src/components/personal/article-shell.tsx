@@ -35,9 +35,9 @@ function formatDate(value: string) {
 }
 
 const collectionLabels: Record<ArticleShellProps["type"], string> = {
-  journal: "文章",
-  note: "随笔",
-  garden: "图片记录",
+  journal: "journal",
+  note: "notes",
+  garden: "garden",
 };
 
 function MarkdownContent({ content }: { content: string }) {
@@ -100,7 +100,7 @@ export function ArticleShell({
         className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground"
       >
         <ArrowLeft className="size-4" />
-        返回{collectionLabels[type]}
+        Back to {collectionLabels[type]}
       </Link>
 
       <article>
@@ -153,7 +153,7 @@ export function ArticleShell({
             className="group rounded-2xl border border-border p-5 transition hover:bg-muted"
           >
             <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
-              上一篇
+              Previous
             </span>
             <span className="mt-2 flex items-center gap-2 text-lg font-medium">
               <ArrowLeft className="size-4 transition group-hover:-translate-x-1" />
@@ -167,7 +167,7 @@ export function ArticleShell({
             className="group rounded-2xl border border-border p-5 transition hover:bg-muted md:text-right"
           >
             <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
-              下一篇
+              Next
             </span>
             <span className="mt-2 flex items-center gap-2 text-lg font-medium md:justify-end">
               {localizedNextPost.title}

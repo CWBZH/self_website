@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "关于",
+  title: "About",
 };
 
 type PageProps = {
@@ -40,7 +40,7 @@ export default async function AboutPage({ searchParams }: PageProps) {
           ))}
           {!publicInteractionsEnabled ? (
             <p>
-              This site is currently presented as a personal non-commercial blog for articles, notes, and image records. Public interaction features are temporarily unavailable during filing review.
+              Public interaction features are currently unavailable.
             </p>
           ) : null}
         </div>

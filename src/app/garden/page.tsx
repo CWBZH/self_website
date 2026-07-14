@@ -8,7 +8,7 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "图片记录",
+  title: "Garden",
   robots: { index: false, follow: false },
 };
 

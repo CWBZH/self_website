@@ -12,16 +12,16 @@ export default function NotFound() {
                         404
                     </h1>
                     <h2 className="text-4xl tracking-tight font-semibold text-foreground mb-2">
-                        页面不存在
+                        Page Not Found
                     </h2>
                     <p className="text-muted-foreground mb-8 text-balance tracking-tight font-medium">
-                        你访问的页面不存在，或已经被移动。
+                        The page you&apos;re looking for doesn&apos;t exist or may have been moved.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3">
                         <Link href="/">
                             <Button variant="outline" className="gap-2 cursor-pointer">
                                 <Home className="h-4 w-4" />
-                                返回首页
+                                Go to Home
                             </Button>
                         </Link>
                     </div>

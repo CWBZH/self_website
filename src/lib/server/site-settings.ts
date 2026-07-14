@@ -1,6 +1,5 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { filingReviewSiteCopy, publicInteractionsEnabled } from "@/lib/public-interactions";
 
 export type SiteSettings = {
   siteName: string;
@@ -139,35 +138,7 @@ export function normalizeSiteSettings(input: Partial<SiteSettings> = {}): SiteSe
     showGardenDot: input.showGardenDot ?? defaultSiteSettings.showGardenDot,
   };
 
-  if (publicInteractionsEnabled) {
-    return normalized;
-  }
-
-  return {
-    ...normalized,
-    siteName: filingReviewSiteCopy.siteName,
-    siteDescription: filingReviewSiteCopy.siteDescription,
-    locale: "zh_CN",
-    homeEyebrow: filingReviewSiteCopy.homeEyebrow,
-    homeTitle: filingReviewSiteCopy.homeTitle,
-    journalEyebrow: filingReviewSiteCopy.journalEyebrow,
-    journalTitle: filingReviewSiteCopy.journalTitle,
-    journalDescription: filingReviewSiteCopy.journalDescription,
-    notesEyebrow: filingReviewSiteCopy.notesEyebrow,
-    notesTitle: filingReviewSiteCopy.notesTitle,
-    notesDescription: filingReviewSiteCopy.notesDescription,
-    gardenEyebrow: filingReviewSiteCopy.gardenEyebrow,
-    gardenTitle: filingReviewSiteCopy.gardenTitle,
-    gardenDescription: filingReviewSiteCopy.gardenDescription,
-    aboutEyebrow: filingReviewSiteCopy.aboutEyebrow,
-    aboutTitle: filingReviewSiteCopy.aboutTitle,
-    aboutParagraphs: filingReviewSiteCopy.aboutParagraphs,
-    roomEyebrow: filingReviewSiteCopy.roomEyebrow,
-    roomTitle: filingReviewSiteCopy.roomTitle,
-    roomDescription: filingReviewSiteCopy.roomDescription,
-    footerEyebrow: filingReviewSiteCopy.footerEyebrow,
-    footerTitle: filingReviewSiteCopy.footerTitle,
-  };
+  return normalized;
 }
 
 export async function getSiteSettings() {

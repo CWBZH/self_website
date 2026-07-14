@@ -1,36 +1,19 @@
 # Everyday Plan Codex Usage
 
-This private endpoint lets Codex write one daily plan to the hidden page:
+This endpoint lets Codex write one daily plan to the unlisted page:
 
 ```text
 https://www.molforever.site/everyday_plan
 ```
 
-The page is not linked from public navigation and is marked `noindex`, but it is still protected by a password. The write API is protected by a separate Bearer token.
+The page is not linked from public navigation and is marked `noindex`. The page and API do not require a password or token, so anyone who knows the URL can read or overwrite a plan for a date.
 
-## Server environment variables
-
-Add these values to `/home/ubuntu/apps/personal-room/.env.production` on the server. Do not commit real secrets.
-
-```bash
-EVERYDAY_PLAN_PASSWORD=your-page-view-password
-EVERYDAY_PLAN_API_TOKEN=your-long-random-write-token
-EVERYDAY_PLAN_SESSION_SECRET=your-long-random-cookie-secret
-```
-
-Generate random values on the server:
-
-```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-```
-
-After editing `.env.production`, redeploy or restart the service.
+No additional server environment variables are required.
 
 ## Write API
 
 ```text
 POST https://www.molforever.site/api/everyday-plan
-Authorization: Bearer $EVERYDAY_PLAN_API_TOKEN
 Content-Type: application/json
 ```
 
@@ -66,7 +49,6 @@ The `date` field is the unique key. Posting the same date again updates that day
 
 ```bash
 curl -X POST https://www.molforever.site/api/everyday-plan \
-  -H "Authorization: Bearer $EVERYDAY_PLAN_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "date": "2026-07-14",
@@ -101,8 +83,7 @@ Expected response:
 ## Read API for Codex verification
 
 ```bash
-curl https://www.molforever.site/api/everyday-plan \
-  -H "Authorization: Bearer $EVERYDAY_PLAN_API_TOKEN"
+curl https://www.molforever.site/api/everyday-plan
 ```
 
 Expected response:
@@ -128,15 +109,10 @@ Use this prompt for the daily Codex automation:
 5. todo 给出 5-10 个明确待办。
 6. review 先留空字符串。
 7. 用 POST https://www.molforever.site/api/everyday-plan 写入。
-8. 请求头带 Authorization: Bearer $EVERYDAY_PLAN_API_TOKEN。
+8. 不需要 Authorization 请求头或 API token。
 9. 写入后用 GET /api/everyday-plan 验证最新计划是否存在。
-10. 不要把 token 输出到公开内容或日志说明里。
 ```
 
 ## Troubleshooting
-
-`401 UNAUTHORIZED` means the Bearer token is missing or wrong.
-
-`503 EVERYDAY_PLAN_API_NOT_CONFIGURED` means the server has not configured `EVERYDAY_PLAN_API_TOKEN`.
 
 `400 INVALID_EVERYDAY_PLAN` means the request body is empty or has no usable focus, blocks, todo, or review.
