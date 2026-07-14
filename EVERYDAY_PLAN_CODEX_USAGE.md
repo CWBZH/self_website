@@ -94,6 +94,25 @@ Expected response:
 }
 ```
 
+## Task completion API
+
+The page saves checkbox changes with this endpoint:
+
+```text
+PATCH https://www.molforever.site/api/everyday-plan
+Content-Type: application/json
+```
+
+```json
+{
+  "date": "2026-07-14",
+  "todoId": "todo-0-example",
+  "done": true
+}
+```
+
+Visitors normally do not need to call this endpoint manually. Existing plans that use a string array for `todo` are converted automatically when read. If Codex posts a new version for the same date, completion is preserved for tasks whose text is unchanged.
+
 ## Daily 7 AM Codex prompt
 
 Use this prompt for the daily Codex automation:

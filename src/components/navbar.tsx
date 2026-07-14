@@ -31,9 +31,9 @@ export default async function Navbar() {
   ].filter(Boolean) as Array<{ label: string; href: string; icon: typeof Icons.github }>;
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-4 z-30">
+    <div className="pointer-events-none fixed inset-x-0 bottom-3 z-30 px-2 sm:bottom-4">
       <Suspense fallback={null}>
-      <Dock className="z-50 pointer-events-auto relative h-14 p-2 w-fit mx-auto flex gap-2 border bg-card/90 backdrop-blur-3xl shadow-[0_0_10px_3px] shadow-primary/5">
+      <Dock className="z-50 pointer-events-auto relative mx-auto flex h-14 w-fit max-w-[calc(100vw-1rem)] gap-1 border bg-card/90 p-1.5 backdrop-blur-3xl shadow-[0_0_10px_3px] shadow-primary/5 sm:gap-2 sm:p-2">
         {navItems.map((item) => {
           const IconComponent = item.icon;
           return (
@@ -53,7 +53,7 @@ export default async function Navbar() {
           );
         })}
         {socialItems.length > 0 ? (
-          <Separator orientation="vertical" className="h-2/3 m-auto w-px bg-border" />
+          <Separator orientation="vertical" className="m-auto hidden h-2/3 w-px bg-border sm:block" />
         ) : null}
         {socialItems.map((item) => {
           const isExternal = item.href.startsWith("http");
@@ -61,7 +61,7 @@ export default async function Navbar() {
           return (
             <Tooltip key={item.label}>
               <TooltipTrigger asChild>
-                <a href={item.href} target={isExternal ? "_blank" : undefined} rel={isExternal ? "noopener noreferrer" : undefined}>
+                <a className="hidden sm:block" href={item.href} target={isExternal ? "_blank" : undefined} rel={isExternal ? "noopener noreferrer" : undefined}>
                   <DockIcon className="rounded-3xl cursor-pointer size-full bg-background p-0 text-muted-foreground hover:text-foreground hover:bg-muted backdrop-blur-3xl border border-border transition-colors">
                     <IconComponent className="size-full rounded-sm overflow-hidden object-contain" />
                   </DockIcon>

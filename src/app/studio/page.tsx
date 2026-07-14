@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function StudioPage() {
   return (
-    <main className="py-10 md:py-16">
+    <main className="py-4 sm:py-8 md:py-12">
       <StudioDashboard />
     </main>
   );

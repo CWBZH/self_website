@@ -25,21 +25,21 @@ export default async function RoomPage({ searchParams }: PageProps) {
 
   return (
     <main id="top">
-      <section className="py-10 md:py-16">
+      <section className="py-8 sm:py-10 md:py-16">
         <p className="text-sm uppercase tracking-[0.12em] text-muted-foreground">
           {settings.roomEyebrow}
         </p>
-        <h1 className="mt-5 max-w-5xl text-balance text-6xl font-medium leading-none tracking-tight md:text-8xl">
+        <h1 className="mt-4 max-w-5xl text-balance text-5xl font-medium leading-[0.95] tracking-tight sm:mt-5 sm:text-6xl md:text-8xl">
           {settings.roomTitle}
         </h1>
-        <p className="mt-7 max-w-2xl text-lg leading-8 text-muted-foreground">
+        <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground sm:mt-7 sm:text-lg sm:leading-8">
           {publicInteractionsEnabled ? settings.roomDescription : interactionsDisabledMessage}
         </p>
       </section>
       {publicInteractionsEnabled ? (
         <ChatRoom />
       ) : (
-        <section className="rounded-3xl border border-border bg-muted/30 p-8 md:p-12">
+        <section className="rounded-2xl border border-border bg-muted/30 p-5 sm:rounded-3xl sm:p-8 md:p-12">
           <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">
             Room
           </p>

@@ -24,9 +24,9 @@ const typeLabels: Record<PersonalPost["type"], string> = {
 };
 
 function heightClass(size: ImageEntryCardProps["size"]) {
-  if (size === "featured") return "min-h-[68vh]";
-  if (size === "wide") return "min-h-[460px] lg:col-span-2";
-  return "min-h-[380px]";
+  if (size === "featured") return "min-h-[52svh] sm:min-h-[68vh]";
+  if (size === "wide") return "min-h-[340px] sm:min-h-[460px] lg:col-span-2";
+  return "min-h-[320px] sm:min-h-[380px]";
 }
 
 export function ImageEntryCard({ post, size = "standard", language = "zh" }: ImageEntryCardProps) {
@@ -46,7 +46,7 @@ export function ImageEntryCard({ post, size = "standard", language = "zh" }: Ima
         className="object-cover transition duration-700 ease-out group-hover:scale-[1.035]"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition duration-500 group-hover:from-black/78" />
-      <div className="absolute inset-x-0 bottom-0 p-6 text-white md:p-8">
+      <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-6 md:p-8">
         <div className="mb-4 flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.14em] text-white/70">
           <span>{typeLabels[post.type] ?? post.type}</span>
           <span>/</span>
@@ -54,7 +54,7 @@ export function ImageEntryCard({ post, size = "standard", language = "zh" }: Ima
         </div>
         <div className="flex items-end justify-between gap-6">
           <div>
-            <h2 className="max-w-3xl text-balance text-3xl font-medium tracking-tight md:text-5xl">
+            <h2 className="max-w-3xl text-balance text-2xl font-medium tracking-tight sm:text-3xl md:text-5xl">
               {post.title}
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-white/72 opacity-90 transition duration-500 group-hover:translate-y-0 group-hover:opacity-100 md:translate-y-2 md:opacity-0">
@@ -66,7 +66,7 @@ export function ImageEntryCard({ post, size = "standard", language = "zh" }: Ima
           </span>
         </div>
       </div>
-      <ArrowUpRight className="absolute right-6 top-6 size-5 text-white/70 transition duration-500 group-hover:translate-x-1 group-hover:-translate-y-1" />
+      <ArrowUpRight className="absolute right-5 top-5 size-5 text-white/70 transition duration-500 group-hover:translate-x-1 group-hover:-translate-y-1 sm:right-6 sm:top-6" />
     </Link>
   );
 }

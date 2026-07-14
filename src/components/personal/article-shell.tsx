@@ -94,25 +94,25 @@ export function ArticleShell({
   const cover = getPostCover(localizedPost);
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 md:px-8" id="top">
+    <main className="mx-auto w-full max-w-6xl py-5 sm:py-8" id="top">
       <Link
         href={withLanguagePath(getPostCollectionPath(type), language)}
-        className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground"
+        className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground sm:mb-8"
       >
         <ArrowLeft className="size-4" />
         Back to {collectionLabels[type]}
       </Link>
 
       <article>
-        <header className="grid gap-8 border-b border-border pb-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
-          <div>
+        <header className="grid gap-6 border-b border-border pb-8 sm:gap-8 sm:pb-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+          <div className="min-w-0">
             <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">
               {localizedPost.type} / {formatDate(localizedPost.publishedAt)}
             </p>
-            <h1 className="mt-5 text-balance text-5xl font-medium leading-none tracking-tight md:text-7xl">
+            <h1 className="mt-4 text-balance text-4xl font-medium leading-[0.98] tracking-tight sm:mt-5 sm:text-5xl md:text-7xl">
               {localizedPost.title}
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
+            <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground sm:mt-6 sm:text-lg sm:leading-8">
               {localizedPost.summary}
             </p>
             <div className="mt-6 flex flex-wrap gap-2 text-xs text-muted-foreground">
@@ -137,7 +137,7 @@ export function ArticleShell({
           </div>
         </header>
 
-        <section className="prose prose-neutral mx-auto mt-12 max-w-3xl dark:prose-invert prose-headings:font-medium prose-p:leading-8 prose-img:rounded-2xl">
+        <section className="prose prose-neutral mx-auto mt-8 max-w-3xl break-words dark:prose-invert prose-headings:font-medium prose-p:leading-7 prose-img:rounded-xl sm:mt-12 sm:prose-p:leading-8 sm:prose-img:rounded-2xl">
           {localizedPost.source === "mdx" && localizedPost.mdx ? (
             <MDXContent code={localizedPost.mdx} components={mdxComponents} />
           ) : (
@@ -146,11 +146,11 @@ export function ArticleShell({
         </section>
       </article>
 
-      <nav className="mx-auto mt-16 grid max-w-3xl gap-3 border-y border-border py-6 md:grid-cols-2">
+      <nav className="mx-auto mt-12 grid max-w-3xl gap-3 border-y border-border py-5 sm:mt-16 sm:py-6 md:grid-cols-2">
         {localizedPreviousPost ? (
           <Link
             href={withLanguagePath(getPostPath(localizedPreviousPost), language)}
-            className="group rounded-2xl border border-border p-5 transition hover:bg-muted"
+            className="group rounded-2xl border border-border p-4 transition hover:bg-muted sm:p-5"
           >
             <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
               Previous
@@ -164,7 +164,7 @@ export function ArticleShell({
         {localizedNextPost ? (
           <Link
             href={withLanguagePath(getPostPath(localizedNextPost), language)}
-            className="group rounded-2xl border border-border p-5 transition hover:bg-muted md:text-right"
+            className="group rounded-2xl border border-border p-4 transition hover:bg-muted sm:p-5 md:text-right"
           >
             <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
               Next

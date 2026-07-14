@@ -24,11 +24,11 @@ export async function ContactFooter({ language = "zh" }: { language?: PersonalPo
   ].filter(Boolean) as Array<[string, string]>;
 
   return (
-    <footer id="contact" className="mt-24 rounded-lg bg-foreground px-6 py-12 text-background md:px-10 md:py-16">
+    <footer id="contact" className="mt-16 rounded-lg bg-foreground px-5 py-10 text-background sm:mt-24 sm:px-6 sm:py-12 md:px-10 md:py-16">
       <p className="mb-5 text-sm uppercase tracking-[0.12em] text-background/60">
         {settings.footerEyebrow}
       </p>
-      <h2 className="max-w-5xl text-balance text-5xl font-medium leading-none tracking-tight md:text-8xl">
+      <h2 className="max-w-5xl text-balance text-4xl font-medium leading-[0.98] tracking-tight sm:text-5xl md:text-8xl">
         {settings.footerTitle}
       </h2>
       <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-background/20 pt-6">
@@ -47,7 +47,7 @@ export async function ContactFooter({ language = "zh" }: { language?: PersonalPo
           </Link>
         ) : null}
       </div>
-      <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-background/10 pt-5 text-xs text-background/50">
+      <div className="mt-8 flex flex-col items-start gap-3 border-t border-background/10 pt-5 text-xs text-background/50 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-5">
         {icpNumber ? (
           <Link href={icpUrl} target="_blank" rel="noreferrer" className="transition hover:text-background">
             {icpNumber}

@@ -609,11 +609,11 @@ export function StudioDashboard() {
     setStatus("");
   }
 
-  const inputClass = "rounded-xl border border-border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring";
+  const inputClass = "w-full min-w-0 rounded-xl border border-border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring";
 
   if (authState === "checking") {
     return (
-      <div className="mx-auto grid min-h-[60vh] w-full max-w-xl place-items-center px-4 py-8 md:px-8">
+      <div className="mx-auto grid min-h-[60vh] w-full max-w-xl place-items-center py-6 sm:py-8">
         <div className="w-full rounded-3xl border border-border p-6 text-center">
           <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">Studio</p>
           <h1 className="mt-3 text-3xl font-medium tracking-tight">Checking session</h1>
@@ -625,11 +625,11 @@ export function StudioDashboard() {
 
   if (authState === "unauthenticated") {
     return (
-      <div className="mx-auto grid min-h-[60vh] w-full max-w-xl place-items-center px-4 py-8 md:px-8">
-        <form className="grid w-full gap-5 rounded-3xl border border-border p-6" onSubmit={login}>
+      <div className="mx-auto grid min-h-[60vh] w-full max-w-xl place-items-center py-6 sm:py-8">
+        <form className="grid w-full gap-5 rounded-2xl border border-border p-5 sm:rounded-3xl sm:p-6" onSubmit={login}>
           <div>
             <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">Studio</p>
-            <h1 className="mt-3 text-4xl font-medium tracking-tight">Login required</h1>
+            <h1 className="mt-3 text-3xl font-medium tracking-tight sm:text-4xl">Login required</h1>
             <p className="mt-3 text-sm leading-6 text-muted-foreground">
               Your studio session is missing or expired. Login again to manage posts, translations, settings, comments, and room messages.
             </p>
@@ -654,11 +654,11 @@ export function StudioDashboard() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-8 md:px-8">
+    <div className="mx-auto w-full max-w-7xl py-4 sm:py-8">
       <header className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-6">
         <div>
           <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">Studio</p>
-          <h1 className="mt-2 text-4xl font-medium tracking-tight md:text-6xl">Content Studio</h1>
+          <h1 className="mt-2 text-3xl font-medium tracking-tight sm:text-4xl md:text-6xl">Content Studio</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
             Manage posts, site copy, comments, and room messages.
           </p>
@@ -668,14 +668,14 @@ export function StudioDashboard() {
         </button>
       </header>
 
-      <div className="mb-6 flex flex-wrap gap-2">
+      <div className="-mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:mb-6 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
         {[
           ["posts", `Posts ${posts.length}`],
           ["settings", "Site settings"],
           ["comments", `Comments ${comments.length}`],
           ["room", `Room ${messages.length}`],
         ].map(([key, label]) => (
-          <button key={key} className={`rounded-full border px-4 py-2 text-sm transition ${activeTab === key ? "border-foreground bg-foreground text-background" : "border-border hover:bg-muted"}`} onClick={() => setActiveTab(key as typeof activeTab)} type="button">
+          <button key={key} className={`shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-sm transition ${activeTab === key ? "border-foreground bg-foreground text-background" : "border-border hover:bg-muted"}`} onClick={() => setActiveTab(key as typeof activeTab)} type="button">
             {label}
           </button>
         ))}
@@ -688,16 +688,16 @@ export function StudioDashboard() {
       ) : null}
 
       {activeTab === "posts" ? (
-        <section className="grid gap-6 lg:grid-cols-[360px_1fr]">
-          <aside className="rounded-3xl border border-border p-4">
+        <section className="grid gap-4 lg:grid-cols-[360px_1fr] lg:gap-6">
+          <aside className="min-w-0 rounded-2xl border border-border p-3 sm:rounded-3xl sm:p-4">
             <div className="mb-4 grid grid-cols-3 gap-2">
               <button className="rounded-full bg-foreground px-3 py-2 text-xs text-background" onClick={() => newPost("journal")} type="button">New journal</button>
               <button className="rounded-full bg-foreground px-3 py-2 text-xs text-background" onClick={() => newPost("note")} type="button">New note</button>
               <button className="rounded-full bg-foreground px-3 py-2 text-xs text-background" onClick={() => newPost("garden")} type="button">New garden</button>
             </div>
-            <div className="grid max-h-[72vh] gap-2 overflow-y-auto pr-1">
+            <div className="flex gap-2 overflow-x-auto pb-2 lg:grid lg:max-h-[72vh] lg:overflow-x-visible lg:overflow-y-auto lg:pb-0 lg:pr-1">
               {posts.map((post) => (
-                <button key={post.id} className={`rounded-2xl border p-4 text-left transition hover:bg-muted ${selectedPost?.id === post.id ? "border-foreground" : "border-border"}`} onClick={() => setPostForm(postToForm(post))} type="button">
+                <button key={post.id} className={`min-w-[220px] rounded-2xl border p-4 text-left transition hover:bg-muted lg:min-w-0 ${selectedPost?.id === post.id ? "border-foreground" : "border-border"}`} onClick={() => setPostForm(postToForm(post))} type="button">
                   <div className="mb-2 flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.12em] text-muted-foreground"><span>{post.type}</span><span>{post.status}</span></div>
                   <strong className="line-clamp-2 text-sm font-medium">{post.title}</strong>
                   <p className="mt-2 line-clamp-2 text-xs leading-5 text-muted-foreground">{post.summary || "No summary"}</p>
@@ -706,7 +706,7 @@ export function StudioDashboard() {
             </div>
           </aside>
 
-          <form className="grid gap-5 rounded-3xl border border-border p-5" onSubmit={(event) => { event.preventDefault(); savePost(); }}>
+          <form className="grid min-w-0 gap-5 overflow-hidden rounded-2xl border border-border p-4 sm:rounded-3xl sm:p-5" onSubmit={(event) => { event.preventDefault(); savePost(); }}>
             <div className="grid gap-4 md:grid-cols-2">
               <label className="grid gap-2 text-sm">Title<input className={inputClass} value={postForm.title} onChange={(event) => updatePost("title", event.target.value)} /></label>
               <label className="grid gap-2 text-sm">URL slug<input className={inputClass} value={postForm.slug} onChange={(event) => updatePost("slug", event.target.value)} /></label>
@@ -723,7 +723,7 @@ export function StudioDashboard() {
               <label className="rounded-xl border border-border px-4 py-2 text-center text-sm transition hover:bg-muted">{isUploading ? "Uploading" : "Upload cover"}<input className="hidden" type="file" accept="image/*" onChange={(event) => uploadCover(event.target.files?.[0] ?? null)} /></label>
             </div>
             <label className="grid gap-2 text-sm">Tags, comma separated<input className={inputClass} value={postForm.tags} onChange={(event) => updatePost("tags", event.target.value)} /></label>
-            <label className="grid gap-2 text-sm">Markdown<textarea className="min-h-[420px] rounded-2xl border border-border bg-background px-4 py-3 font-mono text-sm leading-7 outline-none focus:ring-2 focus:ring-ring" value={postForm.content} onChange={(event) => updatePost("content", event.target.value)} /></label>
+            <label className="grid min-w-0 gap-2 text-sm">Markdown<textarea className="min-h-[320px] w-full min-w-0 rounded-2xl border border-border bg-background px-4 py-3 font-mono text-sm leading-7 outline-none focus:ring-2 focus:ring-ring sm:min-h-[420px]" value={postForm.content} onChange={(event) => updatePost("content", event.target.value)} /></label>
             <section className="grid gap-4 rounded-3xl border border-border bg-muted/20 p-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
@@ -742,7 +742,7 @@ export function StudioDashboard() {
               </div>
               <label className="grid gap-2 text-sm">EN summary<textarea className="min-h-20 rounded-xl border border-border bg-background px-3 py-2 leading-6 outline-none focus:ring-2 focus:ring-ring" value={postForm.translationEnSummary} onChange={(event) => updatePost("translationEnSummary", event.target.value)} /></label>
               <label className="grid gap-2 text-sm">EN tags, comma separated<input className={inputClass} value={postForm.translationEnTags} onChange={(event) => updatePost("translationEnTags", event.target.value)} /></label>
-              <label className="grid gap-2 text-sm">EN Markdown<textarea className="min-h-[300px] rounded-2xl border border-border bg-background px-4 py-3 font-mono text-sm leading-7 outline-none focus:ring-2 focus:ring-ring" value={postForm.translationEnContent} onChange={(event) => updatePost("translationEnContent", event.target.value)} /></label>
+              <label className="grid min-w-0 gap-2 text-sm">EN Markdown<textarea className="min-h-[240px] w-full min-w-0 rounded-2xl border border-border bg-background px-4 py-3 font-mono text-sm leading-7 outline-none focus:ring-2 focus:ring-ring sm:min-h-[300px]" value={postForm.translationEnContent} onChange={(event) => updatePost("translationEnContent", event.target.value)} /></label>
             </section>
             <div className="flex flex-wrap items-center gap-3">
               <button disabled={isSaving} className="rounded-full border border-border px-5 py-2 text-sm transition hover:bg-muted disabled:opacity-50" type="button" onClick={() => savePost("draft")}>Save draft</button>
@@ -798,7 +798,7 @@ function SettingsPanel({
   onSave: () => void;
 }) {
   return (
-    <section className="grid gap-5 rounded-3xl border border-border p-5">
+    <section className="grid min-w-0 gap-5 overflow-hidden rounded-2xl border border-border p-4 sm:rounded-3xl sm:p-5">
       <div className="grid gap-4 md:grid-cols-3">
         <label className="grid gap-2 text-sm">Site name<input className={inputClass} value={form.siteName} onChange={(event) => onChange("siteName", event.target.value)} /></label>
         <label className="grid gap-2 text-sm">Site URL<input className={inputClass} value={form.siteUrl} onChange={(event) => onChange("siteUrl", event.target.value)} /></label>
@@ -881,7 +881,7 @@ function ModerationList<T extends { id: string; nickname: string; content: strin
             <h2 className="text-2xl font-medium tracking-tight">{title}</h2>
             <p className="mt-1 text-sm text-muted-foreground">Showing {filteredItems.length} / {items.length}</p>
           </div>
-          <input className="min-w-[240px] rounded-full border border-border bg-background px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" value={search} onChange={(event) => onSearch(event.target.value)} placeholder="Search nickname, content, slug" />
+          <input className="w-full min-w-0 rounded-full border border-border bg-background px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-ring sm:w-auto sm:min-w-[240px]" value={search} onChange={(event) => onSearch(event.target.value)} placeholder="Search nickname, content, slug" />
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
           {(["all", "visible", "hidden", "deleted"] as const).map((nextFilter) => (

@@ -25,16 +25,16 @@ export default async function AboutPage({ searchParams }: PageProps) {
 
   return (
     <main id="top">
-      <section className="grid gap-10 py-10 md:grid-cols-[0.85fr_1.15fr] md:py-16">
+      <section className="grid gap-8 py-8 sm:py-10 md:grid-cols-[0.85fr_1.15fr] md:gap-10 md:py-16">
         <div>
           <p className="text-sm uppercase tracking-[0.12em] text-muted-foreground">
             {settings.aboutEyebrow}
           </p>
-          <h1 className="mt-5 text-balance text-6xl font-medium leading-none tracking-tight md:text-8xl">
+          <h1 className="mt-4 text-balance text-5xl font-medium leading-[0.95] tracking-tight sm:mt-5 sm:text-6xl md:text-8xl">
             {settings.aboutTitle}
           </h1>
         </div>
-        <div className="self-end space-y-6 text-lg leading-8 text-muted-foreground">
+        <div className="self-end space-y-5 text-base leading-7 text-muted-foreground sm:space-y-6 sm:text-lg sm:leading-8">
           {aboutParagraphs.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}
