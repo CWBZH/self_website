@@ -37,7 +37,7 @@ type EverydayPlanStore = {
 
 const storePath = path.join(process.cwd(), "data", "everyday-plans.json");
 const backupDirectory = path.join(process.cwd(), "data", "everyday-plan-backups");
-const backupLimit = 30;
+const backupLimit = 200;
 const emptyStore: EverydayPlanStore = {
   plans: [],
 };
