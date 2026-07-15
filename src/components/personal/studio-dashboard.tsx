@@ -1,5 +1,6 @@
 "use client";
 
+import { EverydayPlanStudio } from "@/components/personal/everyday-plan-studio";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 type ModerationStatus = "visible" | "hidden" | "deleted";
@@ -244,7 +245,7 @@ export function StudioDashboard() {
   const [settingsForm, setSettingsForm] = useState<SettingsForm>(emptySettings);
   const [authState, setAuthState] = useState<"checking" | "authenticated" | "unauthenticated">("checking");
   const [password, setPassword] = useState("");
-  const [activeTab, setActiveTab] = useState<"posts" | "settings" | "comments" | "room">("posts");
+  const [activeTab, setActiveTab] = useState<"posts" | "plans" | "settings" | "comments" | "room">("posts");
   const [status, setStatus] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -660,7 +661,7 @@ export function StudioDashboard() {
           <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">Studio</p>
           <h1 className="mt-2 text-3xl font-medium tracking-tight sm:text-4xl md:text-6xl">Content Studio</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Manage posts, site copy, comments, and room messages.
+            Manage posts, daily plans, site copy, comments, and room messages.
           </p>
         </div>
         <button className="rounded-full border border-border px-4 py-2 text-sm transition hover:bg-muted" onClick={logout} type="button">
@@ -671,6 +672,7 @@ export function StudioDashboard() {
       <div className="-mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:mb-6 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
         {[
           ["posts", `Posts ${posts.length}`],
+          ["plans", "每日计划"],
           ["settings", "Site settings"],
           ["comments", `Comments ${comments.length}`],
           ["room", `Room ${messages.length}`],
@@ -686,6 +688,8 @@ export function StudioDashboard() {
       {activeTab === "settings" ? (
         <SettingsPanel form={settingsForm} inputClass={inputClass} isSaving={isSaving} onChange={updateSettings} onSave={saveSettings} />
       ) : null}
+
+      {activeTab === "plans" ? <EverydayPlanStudio /> : null}
 
       {activeTab === "posts" ? (
         <section className="grid gap-4 lg:grid-cols-[360px_1fr] lg:gap-6">

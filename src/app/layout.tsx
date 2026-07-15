@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
 import { getSiteSettings } from "@/lib/server/site-settings";
 import { cn } from "@/lib/utils";
+import { ConditionalNavbar } from "@/components/personal/conditional-navbar";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -86,7 +87,9 @@ export default function RootLayout({
             <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-4 pb-28 sm:px-8 sm:py-12 sm:pb-28">
               {children}
             </div>
-            <Navbar />
+            <ConditionalNavbar>
+              <Navbar />
+            </ConditionalNavbar>
           </TooltipProvider>
         </ThemeProvider>
       </body>

@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rename, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 export type EverydayPlanBlock = {
@@ -13,13 +13,20 @@ export type EverydayPlanTodo = {
   completedAt: string | null;
 };
 
+export type EverydayPlanSource = "manual" | "scheduled";
+
 export type EverydayPlan = {
   date: string;
   title: string;
+  dayType: string;
   focus: string;
+  mostImportant: string;
+  detailMarkdown: string;
   blocks: EverydayPlanBlock[];
   todo: EverydayPlanTodo[];
   review: string;
+  source: EverydayPlanSource;
+  locked: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -29,9 +36,20 @@ type EverydayPlanStore = {
 };
 
 const storePath = path.join(process.cwd(), "data", "everyday-plans.json");
+const backupDirectory = path.join(process.cwd(), "data", "everyday-plan-backups");
+const backupLimit = 30;
 const emptyStore: EverydayPlanStore = {
   plans: [],
 };
+
+export function shanghaiDateKey(value = new Date()) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(value);
+}
 
 function cleanText(value: unknown, fallback = "") {
   return String(value ?? fallback).trim();
@@ -48,7 +66,11 @@ function normalizeDate(value: unknown) {
     return raw;
   }
 
-  return new Date().toISOString().slice(0, 10);
+  return shanghaiDateKey();
+}
+
+function normalizeSource(value: unknown, fallback: EverydayPlanSource = "manual") {
+  return value === "scheduled" || value === "manual" ? value : fallback;
 }
 
 function normalizeBlocks(value: unknown): EverydayPlanBlock[] {
@@ -112,18 +134,36 @@ function normalizePlan(input: unknown, existing?: EverydayPlan): EverydayPlan {
   const now = new Date().toISOString();
   const date = normalizeDate(source.date ?? existing?.date);
   const title = clampText(source.title, 120, existing?.title || "今日计划");
+  const dayType = clampText(source.dayType, 80, existing?.dayType || "");
   const focus = clampText(source.focus, 800, existing?.focus || "");
+  const mostImportant = clampText(
+    source.mostImportant,
+    400,
+    existing?.mostImportant || ""
+  );
+  const detailMarkdown = clampText(
+    source.detailMarkdown,
+    50_000,
+    existing?.detailMarkdown || ""
+  );
   const blocks = normalizeBlocks(source.blocks ?? existing?.blocks);
   const todo = normalizeTodo(source.todo ?? existing?.todo, existing?.todo);
   const review = clampText(source.review, 8000, existing?.review || "");
+  const planSource = normalizeSource(source.source, existing?.source || "manual");
+  const locked = typeof source.locked === "boolean" ? source.locked : existing?.locked ?? false;
 
   return {
     date,
     title: title || "今日计划",
+    dayType,
     focus,
+    mostImportant,
+    detailMarkdown,
     blocks,
     todo,
     review,
+    source: planSource,
+    locked,
     createdAt: existing?.createdAt || now,
     updatedAt: now,
   };
@@ -141,10 +181,15 @@ function normalizeStoredPlan(value: unknown): EverydayPlan | null {
   return {
     date: normalizeDate(source.date),
     title: clampText(source.title, 120, "今日计划") || "今日计划",
+    dayType: clampText(source.dayType, 80),
     focus: clampText(source.focus, 800),
+    mostImportant: clampText(source.mostImportant, 400),
+    detailMarkdown: clampText(source.detailMarkdown, 50_000),
     blocks: normalizeBlocks(source.blocks),
     todo: normalizeTodo(source.todo),
     review: clampText(source.review, 8000),
+    source: normalizeSource(source.source),
+    locked: source.locked === true,
     createdAt,
     updatedAt: clampText(source.updatedAt, 80, createdAt),
   };
@@ -152,6 +197,7 @@ function normalizeStoredPlan(value: unknown): EverydayPlan | null {
 
 async function ensureStore() {
   await mkdir(path.dirname(storePath), { recursive: true });
+  await mkdir(backupDirectory, { recursive: true });
 }
 
 async function readStore(): Promise<EverydayPlanStore> {
@@ -176,7 +222,34 @@ async function readStore(): Promise<EverydayPlanStore> {
 
 async function writeStore(store: EverydayPlanStore) {
   await ensureStore();
-  await writeFile(storePath, `${JSON.stringify(store, null, 2)}\n`, "utf8");
+  const serialized = `${JSON.stringify(store, null, 2)}\n`;
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const temporaryPath = `${storePath}.${process.pid}.${Date.now()}.tmp`;
+
+  try {
+    const previous = await readFile(storePath, "utf8");
+    await writeFile(
+      path.join(backupDirectory, `everyday-plans-${timestamp}.json`),
+      previous,
+      "utf8"
+    );
+  } catch {
+    // The first write has no previous version to back up.
+  }
+
+  await writeFile(temporaryPath, serialized, "utf8");
+  await rename(temporaryPath, storePath);
+
+  const backups = (await readdir(backupDirectory))
+    .filter((name) => name.startsWith("everyday-plans-") && name.endsWith(".json"))
+    .sort()
+    .reverse();
+
+  await Promise.all(
+    backups.slice(backupLimit).map((name) =>
+      unlink(path.join(backupDirectory, name)).catch(() => undefined)
+    )
+  );
 }
 
 export async function listEverydayPlans() {
@@ -192,10 +265,17 @@ export async function getLatestEverydayPlan() {
 
 export async function upsertEverydayPlan(input: unknown) {
   const store = await readStore();
-  const incomingDate = normalizeDate((input as { date?: unknown } | null)?.date);
+  const source = (input ?? {}) as Record<string, unknown>;
+  const incomingDate = normalizeDate(source.date);
   const existingIndex = store.plans.findIndex((item) => item.date === incomingDate);
   const existing = existingIndex >= 0 ? store.plans[existingIndex] : undefined;
-  const plan = normalizePlan({ ...(input as Record<string, unknown>), date: incomingDate }, existing);
+  const incomingSource = normalizeSource(source.source, existing?.source || "manual");
+
+  if (existing?.locked && incomingSource === "scheduled" && source.force !== true) {
+    throw new Error("EVERYDAY_PLAN_LOCKED");
+  }
+
+  const plan = normalizePlan({ ...source, date: incomingDate, source: incomingSource }, existing);
 
   if (!plan.focus && plan.blocks.length === 0 && plan.todo.length === 0 && !plan.review) {
     throw new Error("EMPTY_EVERYDAY_PLAN");
@@ -213,6 +293,20 @@ export async function upsertEverydayPlan(input: unknown) {
 
   await writeStore(store);
   return plan;
+}
+
+export async function deleteEverydayPlan(date: string) {
+  const normalizedDate = normalizeDate(date);
+  const store = await readStore();
+  const nextPlans = store.plans.filter((plan) => plan.date !== normalizedDate);
+
+  if (nextPlans.length === store.plans.length) {
+    return false;
+  }
+
+  store.plans = nextPlans;
+  await writeStore(store);
+  return true;
 }
 
 export async function updateEverydayPlanTodo(

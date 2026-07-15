@@ -3,6 +3,8 @@
 import type { EverydayPlan } from "@/lib/server/everyday-plan-store";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const weekLabels = ["一", "二", "三", "四", "五", "六", "日"];
 
@@ -96,9 +98,14 @@ function yearWeeks(today: string) {
   );
 }
 
-export function EverydayPlanDashboard({ initialPlans }: { initialPlans: EverydayPlan[] }) {
-  const today = toDateKey(new Date());
-  const initialDate = initialPlans[0]?.date ?? today;
+export function EverydayPlanDashboard({
+  initialPlans,
+  today,
+}: {
+  initialPlans: EverydayPlan[];
+  today: string;
+}) {
+  const initialDate = today;
   const [plans, setPlans] = useState(initialPlans);
   const [selectedDate, setSelectedDate] = useState(initialDate);
   const [monthKey, setMonthKey] = useState(initialDate.slice(0, 7));
@@ -221,7 +228,7 @@ export function EverydayPlanDashboard({ initialPlans }: { initialPlans: Everyday
     <main className="mx-auto w-full max-w-7xl py-5 sm:py-10">
       <header className="grid gap-6 border-b border-border pb-8 sm:grid-cols-[1fr_auto] sm:items-end sm:pb-10">
         <div>
-          <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Everyday Plan</p>
+          <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Daily rhythm</p>
           <h1 className="mt-3 text-4xl font-medium tracking-tight sm:text-6xl lg:text-7xl">每日计划</h1>
           <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
             每一次勾选都会沉淀为一格颜色。这里不追求完美，只记录真实完成过的日子。
@@ -241,11 +248,18 @@ export function EverydayPlanDashboard({ initialPlans }: { initialPlans: Everyday
         </div>
       </header>
 
-      <section className="mt-6 grid gap-5 lg:grid-cols-[1.08fr_0.92fr] lg:gap-6">
+      <section className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1.55fr)_minmax(300px,0.75fr)] lg:items-start lg:gap-6">
         <div className="rounded-[1.75rem] border border-border p-4 sm:p-6 lg:p-8">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{formatDate(selectedDate)}</p>
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{formatDate(selectedDate)}</p>
+                {selectedPlan?.dayType ? (
+                  <span className="rounded-full bg-muted px-2.5 py-1 text-[11px] text-muted-foreground">
+                    {selectedPlan.dayType}
+                  </span>
+                ) : null}
+              </div>
               <h2 className="mt-2 text-2xl font-medium tracking-tight sm:text-4xl">
                 {selectedPlan?.title ?? "这一天还没有计划"}
               </h2>
@@ -265,6 +279,13 @@ export function EverydayPlanDashboard({ initialPlans }: { initialPlans: Everyday
                   style={{ width: `${selectedProgress.ratio * 100}%` }}
                 />
               </div>
+
+              {selectedPlan.mostImportant ? (
+                <div className="mt-6 rounded-2xl border border-foreground/15 bg-foreground px-4 py-4 text-background sm:px-5">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-background/60">今天最重要的一件事</p>
+                  <p className="mt-2 text-base leading-7 sm:text-lg">{selectedPlan.mostImportant}</p>
+                </div>
+              ) : null}
 
               {selectedPlan.focus ? (
                 <div className="mt-6 rounded-2xl bg-muted/55 p-4 sm:p-5">
@@ -316,6 +337,21 @@ export function EverydayPlanDashboard({ initialPlans }: { initialPlans: Everyday
                 </div>
               ) : null}
 
+              {selectedPlan.detailMarkdown ? (
+                <details className="group mt-8 rounded-2xl border border-border" open={selectedDate === today}>
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-4 text-sm font-medium sm:px-5">
+                    <span>完整计划</span>
+                    <span className="text-xs font-normal text-muted-foreground group-open:hidden">展开</span>
+                    <span className="hidden text-xs font-normal text-muted-foreground group-open:inline">收起</span>
+                  </summary>
+                  <div className="border-t border-border px-4 py-5 sm:px-5">
+                    <div className="prose prose-neutral max-w-none text-sm leading-7 dark:prose-invert sm:text-base">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{selectedPlan.detailMarkdown}</ReactMarkdown>
+                    </div>
+                  </div>
+                </details>
+              ) : null}
+
               {selectedPlan.review ? (
                 <div className="mt-8 border-t border-border pt-6">
                   <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">复盘</p>
@@ -325,14 +361,14 @@ export function EverydayPlanDashboard({ initialPlans }: { initialPlans: Everyday
             </>
           ) : (
             <div className="mt-8 rounded-2xl border border-dashed border-border p-6 text-sm leading-6 text-muted-foreground">
-              Codex 尚未为这一天写入计划。你可以在日历中选择其他有颜色的日期。
+              这一天还没有安排。你可以在日历中查看其他日期，或稍后再回来记录。
             </div>
           )}
 
           {error ? <p className="mt-4 text-sm text-red-500">{error}</p> : null}
         </div>
 
-        <aside className="rounded-[1.75rem] border border-border p-4 sm:p-6">
+        <aside className="rounded-[1.75rem] border border-border p-4 sm:p-6 lg:sticky lg:top-6">
           <div className="flex items-center justify-between gap-3">
             <button type="button" onClick={() => moveMonth(-1)} className="grid size-9 place-items-center rounded-full border border-border transition hover:bg-muted" aria-label="上个月">
               <ChevronLeft className="size-4" />

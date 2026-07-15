@@ -1,5 +1,5 @@
 import { EverydayPlanDashboard } from "@/components/personal/everyday-plan-dashboard";
-import { listEverydayPlans } from "@/lib/server/everyday-plan-store";
+import { listEverydayPlans, shanghaiDateKey } from "@/lib/server/everyday-plan-store";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -16,5 +16,5 @@ export const metadata: Metadata = {
 export default async function EverydayPlanPage() {
   const plans = await listEverydayPlans();
 
-  return <EverydayPlanDashboard initialPlans={plans} />;
+  return <EverydayPlanDashboard initialPlans={plans} today={shanghaiDateKey()} />;
 }
